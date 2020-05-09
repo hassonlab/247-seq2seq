@@ -104,7 +104,7 @@ def test_for_bad_window(start, stop, shape, window):
     # if the window_end is outside the signal
     # if there are not enough frames in the window
     return (start < 0 or start > shape[0] or stop < 0 or stop > shape[0]
-            or stop - start < window)
+            or stop - start < window or stop - start < 0)
 
 
 def calculate_windows_params(gram, param_dict):
