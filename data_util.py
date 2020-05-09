@@ -91,6 +91,14 @@ def remove_duplicates(grams):
     return list(df.to_records(index=False))
 
 
+def remove_oovs(grams, vocabulary, data_tag='train'):
+    if data_tag == 'train':
+        grams = filter(lambda x: vocabulary['<unk>'] not in x[0], grams)
+    else:
+        grams = filter(lambda x: x[0] != [vocabulary['<unk>']] * 2, grams)
+    return list(grams)
+
+
 def add_begin_end_tokens(word_pair, vocabulary, start_tok, stop_tok):
     word_pair.insert(0, vocabulary[start_tok])  # Add start token
     word_pair.append(vocabulary[stop_tok])  # Add end token
