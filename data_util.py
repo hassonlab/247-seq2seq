@@ -63,9 +63,10 @@ def return_examples(file, delim, vocabulary, ex_words):
 
 
 def generate_wordpairs(examples):
-    # if the first set already has two words and is speaker 1
-    # if the second set already has two words and is speaker 1
-    # the onset of the first word is earlier than the second word
+    '''if the first set already has two words and is speaker 1
+        if the second set already has two words and is speaker 1
+        the onset of the first word is earlier than the second word
+    '''
     my_grams = []
     for first, second in zip(examples, examples[1:]):
         len1, len2 = len(first[0]), len(second[0])
@@ -73,11 +74,10 @@ def generate_wordpairs(examples):
             my_grams.append(first)
         if second[1] and len2 == 2:
             my_grams.append(second)
-        if first[1] and second[1]:
-            if len1 == 1 and len2 == 1:
-                if first[2] < second[2]:
-                    ak = (first[0] + second[0], True, first[2], second[3])
-                    my_grams.append(ak)
+        if ((first[1] and second[1]) and (len1 == 1 and len2 == 1)
+                and (first[2] < second[2])):
+            ak = (first[0] + second[0], True, first[2], second[3])
+            my_grams.append(ak)
     return my_grams
 
 
