@@ -360,25 +360,6 @@ optimizer = AdamW(model.parameters(),
                   lr=args.lr,
                   weight_decay=args.weight_decay)
 scheduler = None
-""" optimizer = optim.AdamW(model.parameters(),
-                        lr=args.lr,
-                        betas=(0.9, 0.98),
-                        eps=1e-9,
-                        weight_decay=args.weight_decay)
-optimizer = optim.AdamW(model.parameters(),
-                        lr=args.lr,
-                        weight_decay=args.weight_decay)
-optimizer = NoamOpt(
-    args.tf_dmodel, 0.2, 5 * step_size,
-    optim.Adam(model.parameters(), lr=0., betas=(0.9, 0.98), eps=1e-9))
-scheduler = optim.lr_scheduler.MultiStepLR(
-    optimizer,
-    milestones=[10 * step_size, 20 * step_size, 40 * step_size],
-    gamma=0.2)
-scheduler = get_cosine_schedule_with_warmup(optimizer,
-                                            10 * step_size,
-                                            args.epochs * step_size,
-                                            num_cycles=2.5) """
 
 # Move model and loss to GPUs
 if args.gpus:
