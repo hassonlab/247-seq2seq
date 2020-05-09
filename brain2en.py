@@ -17,9 +17,9 @@ from transformers import AdamW
 
 from arg_parser import arg_parser
 from config import build_config
-from data_util import (Brain2enDataset, MyCollator,
-                       build_design_matrices_classification,
-                       build_design_matrices_seq2seq)
+from data_util import Brain2enDataset, MyCollator
+from build_matrices import (build_design_matrices_classification,
+                            build_design_matrices_seq2seq)
 from models import MeNTAL
 from train_eval import evaluate_roc, evaluate_topk, plot_training, train, valid
 from vocab_builder import get_vocab, get_sp_vocab
@@ -67,7 +67,7 @@ vocab = get_sp_vocab(CONFIG,
                      CONV_DIRS,
                      args.subjects,
                      algo='unigram',
-                     vocab_size=1000,
+                     vocab_size=500,
                      exclude_words=CONFIG["exclude_words"],
                      datum_suffix=CONFIG["datum_suffix"],
                      oov_tok=CONFIG["oov_token"],
