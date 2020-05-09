@@ -16,6 +16,7 @@ import torch.nn as nn
 import torch.utils.data as data
 from transformers import AdamW
 
+from arg_parser import arg_parser
 from data_util import (Brain2enDataset, MyCollator,
                        build_design_matrices_classification,
                        build_design_matrices_seq2seq, get_sp_vocab, get_vocab,
@@ -30,32 +31,33 @@ now = datetime.now()
 dt_string = now.strftime("%A %d/%m/%Y %H:%M:%S")
 print("Start Time: ", dt_string)
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--model', type=str, default='MeNTAL')
-parser.add_argument('--subjects', nargs='*', default=['625', '676'])
-parser.add_argument('--shift', type=int, default=0)
-parser.add_argument('--lr', type=float, default=1e-4)
-parser.add_argument('--gpus', type=int, default=16)
-parser.add_argument('--epochs', type=int, default=5)
-parser.add_argument('--batch-size', type=int, default=48)
-parser.add_argument('--window-size', type=int, default=2000)
-parser.add_argument('--bin-size', type=int, default=50)
-parser.add_argument('--init-model', type=str, default=None)
-parser.add_argument('--no-plot', action='store_false', default=False)
-parser.add_argument('--electrodes', nargs='*', default=list(range(1, 65)))
-parser.add_argument('--vocab-min-freq', type=int, default=350)
-parser.add_argument('--seed', type=int, default=1234)
-parser.add_argument('--shuffle', action="store_true", default=False)
-parser.add_argument('--no-eval', action="store_true", default=False)
-parser.add_argument('--temp', type=float, default=0.995)
-parser.add_argument('--tf-dmodel', type=int, default=64)
-parser.add_argument('--tf-dff', type=int, default=256)
-parser.add_argument('--tf-nhead', type=int, default=8)
-parser.add_argument('--tf-nlayer', type=int, default=12)
-parser.add_argument('--tf-dropout', type=float, default=0.05)
-parser.add_argument('--weight-decay', type=float, default=0.35)
-args = parser.parse_args([])
+# parser = argparse.ArgumentParser()
+# parser.add_argument('--model', type=str, default='MeNTAL')
+# parser.add_argument('--subjects', nargs='*', default=['625', '676'])
+# parser.add_argument('--shift', type=int, default=0)
+# parser.add_argument('--lr', type=float, default=1e-4)
+# parser.add_argument('--gpus', type=int, default=16)
+# parser.add_argument('--epochs', type=int, default=5)
+# parser.add_argument('--batch-size', type=int, default=48)
+# parser.add_argument('--window-size', type=int, default=2000)
+# parser.add_argument('--bin-size', type=int, default=50)
+# parser.add_argument('--init-model', type=str, default=None)
+# parser.add_argument('--no-plot', action='store_false', default=False)
+# parser.add_argument('--electrodes', nargs='*', default=list(range(1, 65)))
+# parser.add_argument('--vocab-min-freq', type=int, default=350)
+# parser.add_argument('--seed', type=int, default=1234)
+# parser.add_argument('--shuffle', action="store_true", default=False)
+# parser.add_argument('--no-eval', action="store_true", default=False)
+# parser.add_argument('--temp', type=float, default=0.995)
+# parser.add_argument('--tf-dmodel', type=int, default=64)
+# parser.add_argument('--tf-dff', type=int, default=256)
+# parser.add_argument('--tf-nhead', type=int, default=8)
+# parser.add_argument('--tf-nlayer', type=int, default=12)
+# parser.add_argument('--tf-dropout', type=float, default=0.05)
+# parser.add_argument('--weight-decay', type=float, default=0.35)
+# args = parser.parse_args([])
 
+args = arg_parser()
 # Default Configuration
 '''
 exclude_words_class: words to be excluded from the classifier vocabulary
