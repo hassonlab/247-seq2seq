@@ -158,7 +158,7 @@ def build_design_matrices_seq2seq(
     ]
 
     signals, labels, seq_lengths = [], [], []
-    for conversation, suffix, idx in convs[0:10]:
+    for conversation, suffix, idx in convs[0:15]:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]
@@ -174,6 +174,9 @@ def build_design_matrices_seq2seq(
 
         examples = return_examples(datum_fn, delimiter, vocab, exclude_words)
         bigrams = generate_wordpairs(examples)
+        if not bigrams:
+            print(f'Skipping bad conversation: {conversation}')
+            continue
         bigrams = remove_duplicates(bigrams)
 
         for bigram in bigrams:
