@@ -118,22 +118,22 @@ def build_design_matrices_classification(
 def build_design_matrices_seq2seq(
         CONFIG,
         vocab,
-        conv_dirs,
-        subjects,
         conversations,
         fs=512,
-        bin_ms=50,
-        shift_ms=0,
-        window_ms=2000,
         delimiter=',',
-        electrodes=[],
-        datum_suffix=["conversation_trimmed", "trimmed"],
-        exclude_words=['sp', '{lg}', '{ns}'],
         aug_shift_ms=[-500, -250, 250]):
 
     # extra stuff that happens inside
     begin_token = CONFIG["begin_token"]
     end_token = CONFIG["end_token"]
+    exclude_words = CONFIG["exclude_words"]
+    datum_suffix = CONFIG["datum_suffix"]
+    electrodes = CONFIG["electrodes"]
+    window_ms = CONFIG["window_size"]
+    shift_ms = CONFIG["shift"]
+    bin_ms = CONFIG["bin_size"]
+    conv_dirs = CONFIG["CONV_DIRS"]
+    subjects = CONFIG["subjects"]
 
     bin_fs = int(bin_ms / 1000 * fs)
     shift_fs = int(shift_ms / 1000 * fs)

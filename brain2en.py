@@ -144,32 +144,16 @@ else:
     x_train, y_train = build_design_matrices_seq2seq(
         CONFIG,
         vocab,
-        CONV_DIRS,
-        args.subjects,
         TRAIN_CONV,
         delimiter=" ",
-        bin_ms=args.bin_size,
-        shift_ms=args.shift,
-        window_ms=args.window_size,
-        electrodes=args.electrodes,
-        datum_suffix=CONFIG["datum_suffix"],
-        exclude_words=CONFIG["exclude_words"],
         aug_shift_ms=[-1000, -500])
     sys.stdout.flush()
     print("Loading validation data")
     x_valid, y_valid = build_design_matrices_seq2seq(
         CONFIG,
         vocab,
-        CONV_DIRS,
-        args.subjects,
         VALID_CONV,
         delimiter=" ",
-        bin_ms=args.bin_size,
-        shift_ms=args.shift,
-        window_ms=args.window_size,
-        electrodes=args.electrodes,
-        datum_suffix=CONFIG["datum_suffix"],
-        exclude_words=CONFIG["exclude_words"],
         aug_shift_ms=[])
     sys.stdout.flush()
     # Shuffle labels if required
