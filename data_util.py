@@ -126,7 +126,7 @@ class Brain2enDataset(Dataset):
             signals (list): brainwave examples.
             labels (list): english examples.
         """
-        global oov_token, vocab
+        # global oov_token, vocab
 
         assert (len(signals) == len(labels))
         indices = [(i, len(signals[i]), len(labels[i]))
