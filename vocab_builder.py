@@ -44,19 +44,14 @@ def get_vocab(conv_dirs,
 
 # Build vocabulary by using sentencepiece (seq2seq required)
 def get_sp_vocab(CONFIG,
-                 conv_dirs,
-                 subjects,
                  algo='unigram',
-                 vocab_size=1000,
-                 exclude_words=['sp', '{lg}', '{ns}'],
-                 datum_suffix=["conversation_trimmed", "trimmed"],
-                 oov_tok="<unk>",
-                 begin_tok="<s>",
-                 end_tok="</s>",
-                 pad_tok="<pad>"):
-    exclude_words = set(exclude_words)
+                 vocab_size=1000):
+    exclude_words = set(CONFIG["exclude_words"])
+    datum_suffix = CONFIG["datum_suffix"]
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
     conversations = CONFIG["TRAIN_CONV"]
+    oov_tok = CONFIG["oov_token"]
+    conv_dirs = CONFIG["CONV_DIRS"]
     convs = [
         (conv_dir + conv_name, '/misc/*datum_%s.txt' % ds, idx)
         for idx, (conv_dir, convs,

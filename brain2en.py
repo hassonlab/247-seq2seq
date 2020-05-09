@@ -64,16 +64,8 @@ VALID_CONV = CONFIG["VALID_CONV"]
 
 print("Building vocabulary")
 vocab = get_sp_vocab(CONFIG,
-                     CONV_DIRS,
-                     args.subjects,
                      algo='unigram',
-                     vocab_size=500,
-                     exclude_words=CONFIG["exclude_words"],
-                     datum_suffix=CONFIG["datum_suffix"],
-                     oov_tok=CONFIG["oov_token"],
-                     begin_tok=CONFIG["begin_token"],
-                     end_tok=CONFIG["end_token"],
-                     pad_tok=CONFIG["pad_token"])
+                     vocab_size=500)
 # print([(i, vocab.IdToPiece(i)) for i in range(len(vocab))])
 
 # Load train and validation datasets
