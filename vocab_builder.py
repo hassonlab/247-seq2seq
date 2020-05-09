@@ -56,13 +56,25 @@ def get_sp_vocab(CONFIG,
                  pad_tok="<pad>"):
     exclude_words = set(exclude_words)
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
-    files = [
-        f for conv_dir, subject, ds in zip(conv_dirs, subjects, datum_suffix)
-        for f in glob.glob(conv_dir + f'NY{subject}*/misc/*datum_{ds}.txt')
+    conversations = CONFIG["TRAIN_CONV"]
+    convs = [
+        (conv_dir + conv_name, '/misc/*datum_%s.txt' % ds, idx)
+        for idx, (conv_dir, convs,
+                  ds) in enumerate(zip(conv_dirs, conversations, datum_suffix))
+        for conv_name in convs
     ]
-    words = []
-    for filename in files:
-        df = pd.read_csv(filename, delimiter=' ', header=None, names=columns)
+
+    words, conv_count = [], 0
+    for conversation, suffix, idx in convs[0:10]:
+
+        # Check if files exists, if it doesn't go to next
+        datum_fn = glob.glob(conversation + suffix)[0]
+        if not datum_fn:
+            print('File DNE: ', conversation + suffix)
+            continue
+
+        conv_count += 1
+        df = pd.read_csv(datum_fn, delimiter=' ', header=None, names=columns)
         df.word = df.word.str.lower()
         df = df[df.speaker == "Speaker1"]
         for e in exclude_words:
@@ -81,6 +93,6 @@ def get_sp_vocab(CONFIG,
     sys.stdout.flush()
     vocab = spm.SentencePieceProcessor()
     vocab.Load("MeNTAL.model")
-    print("# Conversations:", len(files))
+    print("# Conversations:", conv_count)
     print("Vocabulary size (%s): %d" % (algo, vocab_size))
     return vocab
