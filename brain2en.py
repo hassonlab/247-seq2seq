@@ -245,19 +245,19 @@ if classify:
                                batch_size=args.batch_size,
                                num_workers=CONFIG["num_cpus"])
 else:
-    print("Building vocabulary")
-    vocab = get_sp_vocab(CONFIG,
-                         CONV_DIRS,
-                         args.subjects,
-                         algo='unigram',
-                         vocab_size=500,
-                         exclude_words=CONFIG["exclude_words"],
-                         datum_suffix=CONFIG["datum_suffix"],
-                         oov_tok=CONFIG["oov_token"],
-                         begin_tok=CONFIG["begin_token"],
-                         end_tok=CONFIG["end_token"],
-                         pad_tok=CONFIG["pad_token"])
-    print([(i, vocab.IdToPiece(i)) for i in range(len(vocab))])
+    # print("Building vocabulary")
+    # vocab = get_sp_vocab(CONFIG,
+    #                      CONV_DIRS,
+    #                      args.subjects,
+    #                      algo='unigram',
+    #                      vocab_size=500,
+    #                      exclude_words=CONFIG["exclude_words"],
+    #                      datum_suffix=CONFIG["datum_suffix"],
+    #                      oov_tok=CONFIG["oov_token"],
+    #                      begin_tok=CONFIG["begin_token"],
+    #                      end_tok=CONFIG["end_token"],
+    #                      pad_tok=CONFIG["pad_token"])
+    # print([(i, vocab.IdToPiece(i)) for i in range(len(vocab))])
     print("Loading training data")
     x_train, y_train = build_design_matrices_seq2seq(
         CONFIG,
