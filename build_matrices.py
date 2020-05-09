@@ -13,18 +13,21 @@ from data_util import (add_begin_end_tokens, calculate_windows_params,
 # Build design matrices from conversation directories,
 # and process for word classification
 def build_design_matrices_classification(
-        conv_dirs,
-        subjects,
+        CONFIG,
+        vocab,
         conversations,
         fs=512,
-        bin_ms=50,
-        shift_ms=0,
-        window_ms=2000,
         delimiter=',',
-        electrodes=[],
-        datum_suffix=["conversation_trimmed", "trimmed"],
         aug_shift_ms=[-500, -250, 250]):
-    global w2i
+
+    datum_suffix = CONFIG["datum_suffix"]
+    electrodes = CONFIG["electrodes"]
+    window_ms = CONFIG["window_size"]
+    shift_ms = CONFIG["shift"]
+    bin_ms = CONFIG["bin_size"]
+    conv_dirs = CONFIG["CONV_DIRS"]
+    subjects = CONFIG["subjects"]
+
     signals, labels = [], []
     bin_fs = int(bin_ms / 1000 * fs)
     shift_fs = int(shift_ms / 1000 * fs)
@@ -41,7 +44,7 @@ def build_design_matrices_classification(
     ]
     aug_shift_fs = [int(s / 1000 * fs) for s in aug_shift_ms]
 
-    for conversation, suffix, idx in convs:
+    for conversation, suffix, idx in convs[:15]:
         datum_fn = glob.glob(conversation + suffix)
         if len(datum_fn) == 0:
             print('File DNE: ', conversation + suffix)
@@ -74,7 +77,7 @@ def build_design_matrices_classification(
             examples = filter(lambda x: x[0] in vocab and x[1] == "Speaker1",
                               examples)
             examples = map(
-                lambda x: (w2i[x[0]], int(float(x[2])) + start_offset,
+                lambda x: (vocab[x[0]], int(float(x[2])) + start_offset,
                            int(float(x[2])) + end_offset), examples)
             examples = filter(
                 lambda x: x[1] >= 0 and x[1] <= max_example_idx and x[2] >= 0

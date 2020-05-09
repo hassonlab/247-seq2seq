@@ -20,7 +20,7 @@ from config import build_config
 from data_util import Brain2enDataset, MyCollator
 from build_matrices import (build_design_matrices_classification,
                             build_design_matrices_seq2seq)
-from models import MeNTAL
+from models import MeNTAL, PITOM, ConvNet10, MeNTALmini
 from train_eval import evaluate_roc, evaluate_topk, plot_training, train, valid
 from vocab_builder import get_vocab, get_sp_vocab
 
@@ -63,16 +63,13 @@ TRAIN_CONV = CONFIG["TRAIN_CONV"]
 VALID_CONV = CONFIG["VALID_CONV"]
 
 print("Building vocabulary")
-vocab = get_sp_vocab(CONFIG,
-                     algo='unigram',
-                     vocab_size=500)
+vocab = get_sp_vocab(CONFIG, algo='unigram', vocab_size=500)
 # print([(i, vocab.IdToPiece(i)) for i in range(len(vocab))])
 
 # Load train and validation datasets
 # (if model is seq2seq, using speaker switching for sentence cutoff,
 # and custom batching)
 if classify:
-    # Build vocabulary
     print("Building vocabulary")
     word2freq, vocab, n_classes, w2i, i2w = get_vocab(
         CONV_DIRS,
@@ -89,29 +86,14 @@ if classify:
 
     print("Loading training data")
     x_train, y_train = build_design_matrices_classification(
-        CONV_DIRS,
-        args.subjects,
-        TRAIN_CONV,
-        delimiter=" ",
-        bin_ms=args.bin_size,
-        shift_ms=args.shift,
-        window_ms=args.window_size,
-        electrodes=args.electrodes,
-        datum_suffix=CONFIG["datum_suffix"],
-        aug_shift_ms=[-1000])
+        CONFIG, w2i, TRAIN_CONV, delimiter=" ", aug_shift_ms=[-1000])
     sys.stdout.flush()
     print("Loading validation data")
-    x_valid, y_valid = build_design_matrices_classification(
-        CONV_DIRS,
-        args.subjects,
-        VALID_CONV,
-        delimiter=" ",
-        bin_ms=args.bin_size,
-        shift_ms=args.shift,
-        window_ms=args.window_size,
-        electrodes=args.electrodes,
-        datum_suffix=CONFIG["datum_suffix"],
-        aug_shift_ms=[])
+    x_valid, y_valid = build_design_matrices_classification(CONFIG,
+                                                            w2i,
+                                                            VALID_CONV,
+                                                            delimiter=" ",
+                                                            aug_shift_ms=[])
     sys.stdout.flush()
     if args.model == "ConvNet10":
         x_train = x_train[:, np.newaxis, ...]
@@ -142,19 +124,14 @@ if classify:
 else:
     print("Loading training data")
     x_train, y_train = build_design_matrices_seq2seq(
-        CONFIG,
-        vocab,
-        TRAIN_CONV,
-        delimiter=" ",
-        aug_shift_ms=[-1000, -500])
+        CONFIG, vocab, TRAIN_CONV, delimiter=" ", aug_shift_ms=[-1000, -500])
     sys.stdout.flush()
     print("Loading validation data")
-    x_valid, y_valid = build_design_matrices_seq2seq(
-        CONFIG,
-        vocab,
-        VALID_CONV,
-        delimiter=" ",
-        aug_shift_ms=[])
+    x_valid, y_valid = build_design_matrices_seq2seq(CONFIG,
+                                                     vocab,
+                                                     VALID_CONV,
+                                                     delimiter=" ",
+                                                     aug_shift_ms=[])
     sys.stdout.flush()
     # Shuffle labels if required
     if args.shuffle:
