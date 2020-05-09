@@ -1,4 +1,3 @@
-import argparse
 import json
 import math
 import os
@@ -17,10 +16,10 @@ import torch.utils.data as data
 from transformers import AdamW
 
 from arg_parser import arg_parser
+from config import build_config
 from data_util import (Brain2enDataset, MyCollator,
                        build_design_matrices_classification,
-                       build_design_matrices_seq2seq, get_sp_vocab, get_vocab,
-                       read_file)
+                       build_design_matrices_seq2seq, get_sp_vocab, get_vocab)
 from models import MeNTAL
 from train_eval import evaluate_roc, evaluate_topk, plot_training, train, valid
 
@@ -30,99 +29,10 @@ from train_eval import evaluate_roc, evaluate_topk, plot_training, train, valid
 now = datetime.now()
 dt_string = now.strftime("%A %d/%m/%Y %H:%M:%S")
 print("Start Time: ", dt_string)
-
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--model', type=str, default='MeNTAL')
-# parser.add_argument('--subjects', nargs='*', default=['625', '676'])
-# parser.add_argument('--shift', type=int, default=0)
-# parser.add_argument('--lr', type=float, default=1e-4)
-# parser.add_argument('--gpus', type=int, default=16)
-# parser.add_argument('--epochs', type=int, default=5)
-# parser.add_argument('--batch-size', type=int, default=48)
-# parser.add_argument('--window-size', type=int, default=2000)
-# parser.add_argument('--bin-size', type=int, default=50)
-# parser.add_argument('--init-model', type=str, default=None)
-# parser.add_argument('--no-plot', action='store_false', default=False)
-# parser.add_argument('--electrodes', nargs='*', default=list(range(1, 65)))
-# parser.add_argument('--vocab-min-freq', type=int, default=350)
-# parser.add_argument('--seed', type=int, default=1234)
-# parser.add_argument('--shuffle', action="store_true", default=False)
-# parser.add_argument('--no-eval', action="store_true", default=False)
-# parser.add_argument('--temp', type=float, default=0.995)
-# parser.add_argument('--tf-dmodel', type=int, default=64)
-# parser.add_argument('--tf-dff', type=int, default=256)
-# parser.add_argument('--tf-nhead', type=int, default=8)
-# parser.add_argument('--tf-nlayer', type=int, default=12)
-# parser.add_argument('--tf-dropout', type=float, default=0.05)
-# parser.add_argument('--weight-decay', type=float, default=0.35)
-# args = parser.parse_args([])
+results_str = now.strftime("%Y-%m-%d-%H:%M")
 
 args = arg_parser()
-# Default Configuration
-'''
-exclude_words_class: words to be excluded from the classifier vocabulary
-exclude_words: words to be excluded from the tranformer vocabulary
-log_interval:
-'''
-CONFIG = {
-    "begin_token":
-    "<s>",
-    "datum_suffix": ("conversation_trimmed", "trimmed"),
-    "electrodes":
-    64,
-    "end_token":
-    "</s>",
-    "exclude_words_class": [
-        "sp", "{lg}", "{ns}", "it", "a", "an", "and", "are", "as", "at", "be",
-        "being", "by", "for", "from", "is", "of", "on", "that", "that's",
-        "the", "there", "there's", "this", "to", "their", "them", "these",
-        "he", "him", "his", "had", "have", "was", "were", "would"
-    ],
-    "exclude_words": ["sp", "{lg}", "{ns}"],
-    "log_interval":
-    32,
-    "main_dir":
-    "/scratch/gpfs/hgazula/brain2en",
-    "data_dir":
-    "/scratch/gpfs/hgazula",
-    "num_cpus":
-    8,
-    "oov_token":
-    "<unk>",
-    "pad_token":
-    "<pad>",
-    "print_pad":
-    120,
-    "train_convs":
-    '-train-convs.txt',
-    "valid_convs":
-    '-valid-convs.txt'
-}
-
-# Format directory logistics
-CONV_DIRS = [
-    CONFIG["data_dir"] + '/%s-conversations/' % i for i in args.subjects
-]
-META_DIRS = [CONFIG["data_dir"] + '/%s-metadata/' % i for i in args.subjects]
-SAVE_DIR = './Results-20200507/%s/' % (args.model)
-LOG_FILE = SAVE_DIR + 'output'
-if not os.path.isdir(SAVE_DIR):
-    os.makedirs(SAVE_DIR)
-
-# sys.stdout = open(LOG_FILE, 'w')
-
-DIR_DICT = dict(CONV_DIRS=CONV_DIRS,
-                META_DIRS=META_DIRS,
-                SAVE_DIR=SAVE_DIR,
-                LOG_FILE=LOG_FILE)
-
-CONFIG.update(DIR_DICT)
-
-if len(args.subjects) == 1:
-    if args.subjects[0] == '625':
-        CONFIG["datum_suffix"] = [CONFIG["datum_suffix"][0]]
-    elif args.subjects[0] == '676':
-        CONFIG["datum_suffix"] = [CONFIG["datum_suffix"][1]]
+CONFIG = build_config(args, results_str)
 
 # Model objectives
 MODEL_OBJ = {
@@ -136,11 +46,6 @@ MODEL_OBJ = {
 DEVICE = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 args.gpus = min(args.gpus, torch.cuda.device_count())
 
-CONFIG.update(vars(args))
-print("Script Configuration: ")
-print(sorted(CONFIG.items()))
-sys.stdout.flush()
-
 # Fix random seed
 random.seed(args.seed)
 np.random.seed(args.seed)
@@ -151,13 +56,10 @@ args.model = args.model.split("_")[0]
 classify = False if (args.model in MODEL_OBJ
                      and MODEL_OBJ[args.model] == "seq2seq") else True
 
-# Conversation splits
-TRAIN_CONV, VALID_CONV = [], []
-for meta, subject in zip(META_DIRS, args.subjects):
-    TRAIN_CONV.append(
-        read_file("%s%s%s" % (meta, subject, CONFIG["train_convs"])))
-    VALID_CONV.append(
-        read_file("%s%s%s" % (meta, subject, CONFIG["valid_convs"])))
+CONV_DIRS = CONFIG["CONV_DIRS"]
+SAVE_DIR = CONFIG["SAVE_DIR"]
+TRAIN_CONV = CONFIG["TRAIN_CONV"]
+VALID_CONV = CONFIG["VALID_CONV"]
 
 print("Building vocabulary")
 vocab = get_sp_vocab(CONFIG,
@@ -245,19 +147,6 @@ if classify:
                                batch_size=args.batch_size,
                                num_workers=CONFIG["num_cpus"])
 else:
-    # print("Building vocabulary")
-    # vocab = get_sp_vocab(CONFIG,
-    #                      CONV_DIRS,
-    #                      args.subjects,
-    #                      algo='unigram',
-    #                      vocab_size=500,
-    #                      exclude_words=CONFIG["exclude_words"],
-    #                      datum_suffix=CONFIG["datum_suffix"],
-    #                      oov_tok=CONFIG["oov_token"],
-    #                      begin_tok=CONFIG["begin_token"],
-    #                      end_tok=CONFIG["end_token"],
-    #                      pad_tok=CONFIG["pad_token"])
-    # print([(i, vocab.IdToPiece(i)) for i in range(len(vocab))])
     print("Loading training data")
     x_train, y_train = build_design_matrices_seq2seq(
         CONFIG,

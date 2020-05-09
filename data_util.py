@@ -344,7 +344,7 @@ def build_design_matrices_seq2seq(
     ]
 
     signals, labels = [], []
-    for conversation, suffix, idx in convs[0:5]:
+    for conversation, suffix, idx in convs[0:10]:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]
