@@ -45,11 +45,12 @@ def build_design_matrices_classification(
     aug_shift_fs = [int(s / 1000 * fs) for s in aug_shift_ms]
 
     for conversation, suffix, idx in convs[:15]:
-        datum_fn = glob.glob(conversation + suffix)
-        if len(datum_fn) == 0:
+        
+        # Check if files exists, if it doesn't go to next
+        datum_fn = glob.glob(conversation + suffix)[0]
+        if not datum_fn:
             print('File DNE: ', conversation + suffix)
             continue
-        datum_fn = datum_fn[0]
 
         # Extract electrode data
         ecogs = return_electrode_array(conversation, electrodes)
