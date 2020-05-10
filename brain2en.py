@@ -71,12 +71,7 @@ vocab = get_sp_vocab(CONFIG, algo='unigram', vocab_size=500)
 # and custom batching)
 if classify:
     print("Building vocabulary")
-    word2freq, vocab, n_classes, w2i, i2w = get_vocab(
-        CONV_DIRS,
-        args.subjects,
-        min_freq=args.vocab_min_freq,
-        exclude_words=CONFIG["exclude_words_class"],
-        datum_suffix=CONFIG["datum_suffix"])
+    word2freq, vocab, n_classes, w2i, i2w = get_vocab(CONFIG)
 
     # Save word counter
     print("Saving word counter")

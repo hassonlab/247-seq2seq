@@ -8,13 +8,13 @@ import sentencepiece as spm
 
 
 # Build vocabulary by reading datums
-def get_vocab(conv_dirs,
-              subjects,
-              min_freq=1,
-              exclude_words=['sp', '{lg}', '{ns}'],
-              datum_suffix=["conversation_trimmed", "trimmed"]):
-    # global word2freq, vocab, n_classes, w2i, i2w
-    exclude_words = set(exclude_words)
+def get_vocab(CONFIG):
+
+    subjects = CONFIG["subjects"]
+    conv_dirs = CONFIG["CONV_DIRS"]
+    min_freq = CONFIG["vocab_min_freq"]
+    datum_suffix = CONFIG["datum_suffix"]
+    exclude_words = set(CONFIG["exclude_words_class"])
     word2freq = Counter()
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
     files = [
@@ -43,9 +43,7 @@ def get_vocab(conv_dirs,
 
 
 # Build vocabulary by using sentencepiece (seq2seq required)
-def get_sp_vocab(CONFIG,
-                 algo='unigram',
-                 vocab_size=1000):
+def get_sp_vocab(CONFIG, algo='unigram', vocab_size=1000):
     exclude_words = set(CONFIG["exclude_words"])
     datum_suffix = CONFIG["datum_suffix"]
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
