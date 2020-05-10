@@ -5,7 +5,8 @@ import numpy as np
 
 from data_util import (add_begin_end_tokens, calculate_windows_params,
                        convert_ms_to_fs, generate_wordpairs, remove_duplicates,
-                       return_examples, test_for_bad_window)
+                       return_conversations, return_examples,
+                       test_for_bad_window)
 from electrode_utils import return_electrode_array
 
 
@@ -18,21 +19,14 @@ def build_design_matrices_classification(CONFIG,
                                          delimiter=',',
                                          aug_shift_ms=[-500, -250, 250]):
 
-    datum_suffix = CONFIG["datum_suffix"]
     electrodes = CONFIG["electrodes"]
-    conv_dirs = CONFIG["CONV_DIRS"]
     subjects = CONFIG["subjects"]
     signal_param_dict = convert_ms_to_fs(CONFIG)
 
     half_window = signal_param_dict["half_window"]
     n_bins = len(range(-half_window, half_window, signal_param_dict["bin_fs"]))
 
-    convs = [
-        (conv_dir + conv_name, '/misc/*datum_%s.txt' % ds, idx)
-        for idx, (conv_dir, convs,
-                  ds) in enumerate(zip(conv_dirs, conversations, datum_suffix))
-        for conv_name in convs
-    ]
+    convs = return_conversations(CONFIG, conversations)
     aug_shift_fs = [int(s / 1000 * fs) for s in aug_shift_ms]
 
     signals, labels = [], []
@@ -117,18 +111,11 @@ def build_design_matrices_seq2seq(CONFIG,
     begin_token = CONFIG["begin_token"]
     end_token = CONFIG["end_token"]
     exclude_words = CONFIG["exclude_words"]
-    datum_suffix = CONFIG["datum_suffix"]
     electrodes = CONFIG["electrodes"]
-    conv_dirs = CONFIG["CONV_DIRS"]
     subjects = CONFIG["subjects"]
     signal_param_dict = convert_ms_to_fs(CONFIG)
 
-    convs = [
-        (conv_dir + conv_name, '/misc/*datum_%s.txt' % ds, idx)
-        for idx, (conv_dir, convs,
-                  ds) in enumerate(zip(conv_dirs, conversations, datum_suffix))
-        for conv_name in convs
-    ]
+    convs = return_conversations(CONFIG, conversations)
 
     signals, labels, seq_lengths = [], [], []
     for conversation, suffix, idx in convs[0:15]:

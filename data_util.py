@@ -18,6 +18,26 @@ def read_file(fn):
     return lines
 
 
+def return_conversations(CONFIG, conversations):
+    """Returns list of conversations
+
+    Arguments:
+        CONFIG {dict} -- Configuration information
+        conversations {list} -- conversation files
+
+    Returns:
+        list -- List of tuples (directory, file, idx)
+    """
+    convs = [
+        (conv_dir + conv_name, '/misc/*datum_%s.txt' % ds, idx)
+        for idx, (conv_dir, convs, ds) in enumerate(
+            zip(CONFIG["CONV_DIRS"], conversations, CONFIG["datum_suffix"]))
+        for conv_name in convs
+    ]
+
+    return convs
+
+
 def return_examples(file, delim, vocabulary, ex_words):
     with open(file, 'r') as fin:
         lines = map(lambda x: x.split(delim), fin)
