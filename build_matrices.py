@@ -1,11 +1,10 @@
 import glob
 import sys
-from multiprocessing import Pool
 
 import numpy as np
 
 from data_util import (add_begin_end_tokens, calculate_windows_params,
-                       generate_wordpairs, get_electrode, remove_duplicates,
+                       generate_wordpairs, remove_duplicates,
                        return_electrode_array, test_for_bad_window,
                        return_examples)
 
