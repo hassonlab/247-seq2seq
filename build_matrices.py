@@ -51,18 +51,11 @@ def build_design_matrices_classification(
             continue
         datum_fn = datum_fn[0]
 
-        # Read signals
-        ecogs = []
-        elec_ids = ((conversation, electrode) for electrode in electrodes)
-        with Pool() as pool:
-            ecogs = list(
-                filter(lambda x: x is not None,
-                       pool.map(get_electrode, elec_ids)))
-        if len(ecogs) == 0:
+        # Extract electrode data
+        ecogs = return_electrode_array(conversation, electrodes)
+        if not ecogs.size:
             print(f'Skipping bad conversation: {conversation}')
             continue
-        ecogs = np.asarray(ecogs).T
-        assert (ecogs.ndim == 2 and ecogs.shape[1] == len(electrodes))
 
         # Read conversations and form examples
         max_example_idx = ecogs.shape[0]
