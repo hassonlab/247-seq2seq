@@ -69,12 +69,6 @@ if classify:
     print("Building vocabulary")
     word2freq, vocab, n_classes, w2i, i2w = get_vocab(CONFIG)
 
-    # Save word counter
-    print("Saving word counter")
-    with open("%sword2freq.json" % SAVE_DIR, "w") as fp:
-        json.dump(word2freq, fp, indent=4)
-    sys.stdout.flush()
-
     print("Loading training data")
     x_train, y_train = build_design_matrices_classification(
         CONFIG, w2i, TRAIN_CONV, delimiter=" ", aug_shift_ms=[-1000])

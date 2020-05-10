@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 import sys
 from collections import Counter
@@ -37,8 +38,16 @@ def get_vocab(CONFIG):
     n_classes = len(vocab)
     w2i = {word: i for i, word in enumerate(vocab)}
     i2w = {i: word for word, i in w2i.items()}
+
     print("# Conversations:", len(files))
     print("Vocabulary size (min_freq=%d): %d" % (min_freq, len(word2freq)))
+
+    # Save word counter
+    print("Saving word counter")
+    with open("%sword2freq.json" % CONFIG["SAVE_DIR"], "w") as fp:
+        json.dump(word2freq, fp, indent=4)
+    sys.stdout.flush()
+
     return word2freq, vocab, n_classes, w2i, i2w
 
 
@@ -86,6 +95,8 @@ def get_sp_vocab(CONFIG, algo='unigram', vocab_size=1000):
     sys.stdout.flush()
     vocab = spm.SentencePieceProcessor()
     vocab.Load("MeNTAL.model")
+
     print("# Conversations:", conv_count)
     print("Vocabulary size (%s): %d" % (algo, vocab_size))
+
     return vocab
