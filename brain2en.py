@@ -62,10 +62,6 @@ SAVE_DIR = CONFIG["SAVE_DIR"]
 TRAIN_CONV = CONFIG["TRAIN_CONV"]
 VALID_CONV = CONFIG["VALID_CONV"]
 
-print("Building vocabulary")
-vocab = get_sp_vocab(CONFIG, algo='unigram', vocab_size=500)
-# print([(i, vocab.IdToPiece(i)) for i in range(len(vocab))])
-
 # Load train and validation datasets
 # (if model is seq2seq, using speaker switching for sentence cutoff,
 # and custom batching)
@@ -117,6 +113,10 @@ if classify:
                                batch_size=args.batch_size,
                                num_workers=CONFIG["num_cpus"])
 else:
+    print("Building vocabulary")
+    vocab = get_sp_vocab(CONFIG, algo='unigram', vocab_size=500)
+    # print([(i, vocab.IdToPiece(i)) for i in range(len(vocab))])
+
     print("Loading training data")
     x_train, y_train = build_design_matrices_seq2seq(
         CONFIG, vocab, TRAIN_CONV, delimiter=" ", aug_shift_ms=[-1000, -500])
