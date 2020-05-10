@@ -5,8 +5,8 @@ import numpy as np
 
 from data_util import (add_begin_end_tokens, calculate_windows_params,
                        convert_ms_to_fs, generate_wordpairs, remove_duplicates,
-                       return_electrode_array, return_examples,
-                       test_for_bad_window)
+                       return_examples, test_for_bad_window)
+from electrode_utils import return_electrode_array
 
 
 # Build design matrices from conversation directories,

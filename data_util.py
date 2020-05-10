@@ -1,15 +1,12 @@
-import glob
 import math
 import os
 import sys
 from collections import Counter
-from multiprocessing import Pool
 
 import numpy as np
 import pandas as pd
 import sentencepiece as spm
 import torch
-from scipy.io import loadmat
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
 
@@ -19,32 +16,6 @@ def read_file(fn):
     with open(fn, 'r') as f:
         lines = [line.rstrip() for line in f]
     return lines
-
-
-# Get electrode date helper
-def get_electrode(elec_id):
-    conversation, electrode = elec_id
-    search_str = conversation + f'/preprocessed/*_{electrode}.mat'
-    mat_fn = glob.glob(search_str)
-    if len(mat_fn) == 0:
-        print(f'[WARNING] electrode {electrode} DNE in {search_str}')
-        return None
-    return loadmat(mat_fn[0])['p1st'].squeeze().astype(np.float32)
-
-
-def return_electrode_array(conv, elect):
-    # Read signals
-    elec_ids = ((conv, electrode) for electrode in elect)
-    with Pool() as pool:
-        ecogs = list(
-            filter(lambda x: x is not None, pool.map(get_electrode, elec_ids)))
-
-    ecogs = np.asarray(ecogs)
-    ecogs = (ecogs - ecogs.mean(axis=1).reshape(
-        ecogs.shape[0], 1)) / ecogs.std(axis=1).reshape(ecogs.shape[0], 1)
-    ecogs = ecogs.T
-    assert (ecogs.ndim == 2 and ecogs.shape[1] == len(elect))
-    return ecogs
 
 
 def return_examples(file, delim, vocabulary, ex_words):
