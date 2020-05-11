@@ -18,10 +18,7 @@ def get_vocab(CONFIG):
     word2freq = Counter()
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
     conversations = CONFIG["TRAIN_CONV"]
-    # files = [
-    #     f for conv_dir, subject, ds in zip(conv_dirs, subjects, datum_suffix)
-    #     for f in glob.glob(conv_dir + f'NY{subject}*/misc/*datum_{ds}.txt')
-    # ]
+    
     convs = return_conversations(CONFIG, conversations)
 
     conv_count = 0
