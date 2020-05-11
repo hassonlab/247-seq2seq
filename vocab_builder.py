@@ -7,6 +7,8 @@ from collections import Counter
 import pandas as pd
 import sentencepiece as spm
 
+from data_util import return_conversations
+
 
 # Build vocabulary by reading datums
 def get_vocab(CONFIG):
@@ -54,17 +56,11 @@ def get_vocab(CONFIG):
 # Build vocabulary by using sentencepiece (seq2seq required)
 def get_sp_vocab(CONFIG, algo='unigram', vocab_size=1000):
     exclude_words = set(CONFIG["exclude_words"])
-    datum_suffix = CONFIG["datum_suffix"]
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
     conversations = CONFIG["TRAIN_CONV"]
     oov_tok = CONFIG["oov_token"]
-    conv_dirs = CONFIG["CONV_DIRS"]
-    convs = [
-        (conv_dir + conv_name, '/misc/*datum_%s.txt' % ds, idx)
-        for idx, (conv_dir, convs,
-                  ds) in enumerate(zip(conv_dirs, conversations, datum_suffix))
-        for conv_name in convs
-    ]
+
+    convs = return_conversations(CONFIG, conversations)
 
     words, conv_count = [], 0
     for conversation, suffix, idx in convs[0:10]:

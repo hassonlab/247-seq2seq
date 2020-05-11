@@ -16,7 +16,7 @@ def arg_parser():
     init-model (string):
 '''
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default='MeNTALmini')
+    parser.add_argument('--model', type=str, default='MeNTAL')
     parser.add_argument('--subjects', nargs='*', default=['625', '676'])
     parser.add_argument('--shift', type=int, default=0)
     parser.add_argument('--lr', type=float, default=1e-4)
