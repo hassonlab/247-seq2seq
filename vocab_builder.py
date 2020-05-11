@@ -13,19 +13,26 @@ from data_util import return_conversations
 # Build vocabulary by reading datums
 def get_vocab(CONFIG):
 
-    subjects = CONFIG["subjects"]
-    conv_dirs = CONFIG["CONV_DIRS"]
     min_freq = CONFIG["vocab_min_freq"]
-    datum_suffix = CONFIG["datum_suffix"]
     exclude_words = set(CONFIG["exclude_words_class"])
     word2freq = Counter()
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
-    files = [
-        f for conv_dir, subject, ds in zip(conv_dirs, subjects, datum_suffix)
-        for f in glob.glob(conv_dir + f'NY{subject}*/misc/*datum_{ds}.txt')
-    ]
-    for filename in files:
-        df = pd.read_csv(filename, delimiter=' ', header=None, names=columns)
+    conversations = CONFIG["TRAIN_CONV"]
+    # files = [
+    #     f for conv_dir, subject, ds in zip(conv_dirs, subjects, datum_suffix)
+    #     for f in glob.glob(conv_dir + f'NY{subject}*/misc/*datum_{ds}.txt')
+    # ]
+    convs = return_conversations(CONFIG, conversations)
+
+    conv_count = 0
+    for conversation, suffix, _ in convs:
+        datum_fn = glob.glob(conversation + suffix)[0]
+        if not datum_fn:
+            print('File DNE: ', conversation + suffix)
+            continue
+
+        conv_count += 1
+        df = pd.read_csv(datum_fn, delimiter=' ', header=None, names=columns)
         df.word = df.word.str.lower()
         df = df[df.speaker == "Speaker1"]
         # Exclude specified words and double words
@@ -41,7 +48,7 @@ def get_vocab(CONFIG):
     w2i = {word: i for i, word in enumerate(vocab)}
     i2w = {i: word for word, i in w2i.items()}
 
-    print("# Conversations:", len(files))
+    print("# Conversations:", conv_count)
     print("Vocabulary size (min_freq=%d): %d" % (min_freq, len(word2freq)))
 
     # Save word counter
