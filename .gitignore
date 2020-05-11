@@ -134,3 +134,4 @@ Results-*
 *.model
 *.vocab
 Results
+*.ipynb
