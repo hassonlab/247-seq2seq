@@ -16,13 +16,13 @@ import torch.utils.data as data
 from transformers import AdamW
 
 from arg_parser import arg_parser
-from config import build_config
-from data_util import Brain2enDataset, MyCollator
 from build_matrices import (build_design_matrices_classification,
                             build_design_matrices_seq2seq)
-from models import MeNTAL, PITOM, ConvNet10, MeNTALmini
+from config import build_config
+from dl_utils import Brain2enDataset, MyCollator
+from models import PITOM, ConvNet10, MeNTAL, MeNTALmini
 from train_eval import evaluate_roc, evaluate_topk, plot_training, train, valid
-from vocab_builder import get_vocab, get_sp_vocab
+from vocab_builder import get_sp_vocab, get_vocab
 
 # from train_eval import *
 
