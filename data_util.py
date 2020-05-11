@@ -1,15 +1,12 @@
-import glob
 import math
 import os
 import sys
 from collections import Counter
-from multiprocessing import Pool
 
 import numpy as np
 import pandas as pd
 import sentencepiece as spm
 import torch
-from scipy.io import loadmat
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
 
@@ -21,30 +18,24 @@ def read_file(fn):
     return lines
 
 
-# Get electrode date helper
-def get_electrode(elec_id):
-    conversation, electrode = elec_id
-    search_str = conversation + f'/preprocessed/*_{electrode}.mat'
-    mat_fn = glob.glob(search_str)
-    if len(mat_fn) == 0:
-        print(f'[WARNING] electrode {electrode} DNE in {search_str}')
-        return None
-    return loadmat(mat_fn[0])['p1st'].squeeze().astype(np.float32)
+def return_conversations(CONFIG, conversations):
+    """Returns list of conversations
 
+    Arguments:
+        CONFIG {dict} -- Configuration information
+        conversations {list} -- conversation files
 
-def return_electrode_array(conv, elect):
-    # Read signals
-    elec_ids = ((conv, electrode) for electrode in elect)
-    with Pool() as pool:
-        ecogs = list(
-            filter(lambda x: x is not None, pool.map(get_electrode, elec_ids)))
+    Returns:
+        list -- List of tuples (directory, file, idx)
+    """
+    convs = [
+        (conv_dir + conv_name, '/misc/*datum_%s.txt' % ds, idx)
+        for idx, (conv_dir, convs, ds) in enumerate(
+            zip(CONFIG["CONV_DIRS"], conversations, CONFIG["datum_suffix"]))
+        for conv_name in convs
+    ]
 
-    ecogs = np.asarray(ecogs)
-    ecogs = (ecogs - ecogs.mean(axis=1).reshape(
-        ecogs.shape[0], 1)) / ecogs.std(axis=1).reshape(ecogs.shape[0], 1)
-    ecogs = ecogs.T
-    assert (ecogs.ndim == 2 and ecogs.shape[1] == len(elect))
-    return ecogs
+    return convs
 
 
 def return_examples(file, delim, vocabulary, ex_words):
@@ -124,6 +115,37 @@ def calculate_windows_params(gram, param_dict):
                   param_dict['bin_fs']))  # calculate number of bins
 
     return seq_length, begin_window, end_window, bin_size
+
+
+def convert_ms_to_fs(CONFIG, fs=512):
+    """Convert seconds to frames
+
+    Arguments:
+        CONFIG {dict} -- Configuration information
+
+    Keyword Arguments:
+        fs {int} -- Frames per second (default: {512})
+    """
+    window_ms = CONFIG["window_size"]
+    shift_ms = CONFIG["shift"]
+    bin_ms = CONFIG["bin_size"]
+
+    bin_fs = int(bin_ms / 1000 * fs)
+    shift_fs = int(shift_ms / 1000 * fs)
+    window_fs = int(window_ms / 1000 * fs)
+    half_window = window_fs // 2
+    start_offset = -half_window + shift_fs
+    end_offset = half_window + shift_fs
+
+    signal_param_dict = dict()
+    signal_param_dict['bin_fs'] = bin_fs
+    signal_param_dict['shift_fs'] = shift_fs
+    signal_param_dict['window_fs'] = window_fs
+    signal_param_dict['half_window'] = half_window
+    signal_param_dict['start_offset'] = start_offset
+    signal_param_dict['end_offset'] = end_offset
+
+    return signal_param_dict
 
 
 # Pytorch Dataset wrapper

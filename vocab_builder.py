@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 import sys
 from collections import Counter
@@ -8,13 +9,13 @@ import sentencepiece as spm
 
 
 # Build vocabulary by reading datums
-def get_vocab(conv_dirs,
-              subjects,
-              min_freq=1,
-              exclude_words=['sp', '{lg}', '{ns}'],
-              datum_suffix=["conversation_trimmed", "trimmed"]):
-    # global word2freq, vocab, n_classes, w2i, i2w
-    exclude_words = set(exclude_words)
+def get_vocab(CONFIG):
+
+    subjects = CONFIG["subjects"]
+    conv_dirs = CONFIG["CONV_DIRS"]
+    min_freq = CONFIG["vocab_min_freq"]
+    datum_suffix = CONFIG["datum_suffix"]
+    exclude_words = set(CONFIG["exclude_words_class"])
     word2freq = Counter()
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
     files = [
@@ -37,15 +38,21 @@ def get_vocab(conv_dirs,
     n_classes = len(vocab)
     w2i = {word: i for i, word in enumerate(vocab)}
     i2w = {i: word for word, i in w2i.items()}
+
     print("# Conversations:", len(files))
     print("Vocabulary size (min_freq=%d): %d" % (min_freq, len(word2freq)))
+
+    # Save word counter
+    print("Saving word counter")
+    with open("%sword2freq.json" % CONFIG["SAVE_DIR"], "w") as fp:
+        json.dump(word2freq, fp, indent=4)
+    sys.stdout.flush()
+
     return word2freq, vocab, n_classes, w2i, i2w
 
 
 # Build vocabulary by using sentencepiece (seq2seq required)
-def get_sp_vocab(CONFIG,
-                 algo='unigram',
-                 vocab_size=1000):
+def get_sp_vocab(CONFIG, algo='unigram', vocab_size=1000):
     exclude_words = set(CONFIG["exclude_words"])
     datum_suffix = CONFIG["datum_suffix"]
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
@@ -88,6 +95,8 @@ def get_sp_vocab(CONFIG,
     sys.stdout.flush()
     vocab = spm.SentencePieceProcessor()
     vocab.Load("MeNTAL.model")
+
     print("# Conversations:", conv_count)
     print("Vocabulary size (%s): %d" % (algo, vocab_size))
+
     return vocab
