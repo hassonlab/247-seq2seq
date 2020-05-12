@@ -1,12 +1,6 @@
 import math
-import os
-import sys
-from collections import Counter
 
-import numpy as np
 import pandas as pd
-import sentencepiece as spm
-import torch
 
 
 # Read file line-by-line and store in list
@@ -37,7 +31,7 @@ def return_conversations(CONFIG, conversations):
     return convs
 
 
-def return_examples(file, delim, vocabulary, ex_words):
+def return_examples(file, delim, vocabulary, ex_words, vocab_str='std'):
     with open(file, 'r') as fin:
         lines = map(lambda x: x.split(delim), fin)
         examples = map(
@@ -46,9 +40,18 @@ def return_examples(file, delim, vocabulary, ex_words):
                 if (z:= y.lower().strip().replace('"', '')) not in ex_words
             ]), x[-1].strip() == "Speaker1", x[-4], x[-3]), lines)
         examples = filter(lambda x: len(x[0]) > 0, examples)
-        examples = map(
-            lambda x: (vocabulary.EncodeAsIds(x[0]), x[1], int(float(x[2])),
-                       int(float(x[3]))), examples)
+        if vocab_str == 'spm':
+            examples = map(
+                lambda x:
+                (vocabulary.EncodeAsIds(x[0]), x[1], int(float(x[2])),
+                 int(float(x[3]))), examples)
+        elif vocab_str == 'std':
+            examples = map(
+                lambda x: ([
+                    vocabulary[x]
+                    if x in vocabulary.keys() else vocabulary['<unk>']
+                    for x in x[0].split()
+                ], x[1], int(float(x[2])), int(float(x[3]))), examples)
         return list(examples)
 
 

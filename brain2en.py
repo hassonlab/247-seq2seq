@@ -22,7 +22,7 @@ from config import build_config
 from dl_utils import Brain2enDataset, MyCollator
 from models import PITOM, ConvNet10, MeNTAL, MeNTALmini
 from train_eval import evaluate_roc, evaluate_topk, plot_training, train, valid
-from vocab_builder import get_sp_vocab, get_vocab
+from vocab_builder import get_sp_vocab, get_std_vocab, get_vocab
 
 # from train_eval import *
 
@@ -108,7 +108,12 @@ if classify:
                                num_workers=CONFIG["num_cpus"])
 else:
     print("Building vocabulary")
-    vocab = get_sp_vocab(CONFIG, algo='unigram', vocab_size=500)
+    if CONFIG["vocabulary"] == 'spm':
+        vocab = get_sp_vocab(CONFIG, algo='unigram', vocab_size=500)
+    elif CONFIG["vocabulary"] == 'std':
+        word2freq, word_list, n_classes, vocab, i2w = get_std_vocab(CONFIG)
+    else:
+        print("Such vocabulary doesn't exist")
     # print([(i, vocab.IdToPiece(i)) for i in range(len(vocab))])
 
     print("Loading training data")

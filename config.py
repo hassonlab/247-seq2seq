@@ -39,7 +39,9 @@ CONFIG = {
     "train_convs":
     '-train-convs.txt',
     "valid_convs":
-    '-valid-convs.txt'
+    '-valid-convs.txt',
+    "vocabulary":
+    'spm'
 }
 
 

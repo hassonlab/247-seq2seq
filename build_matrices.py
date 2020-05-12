@@ -132,7 +132,8 @@ def build_design_matrices_seq2seq(CONFIG,
             print(f'Skipping bad conversation: {conversation}')
             continue
 
-        examples = return_examples(datum_fn, delimiter, vocab, exclude_words)
+        examples = return_examples(datum_fn, delimiter, vocab, exclude_words,
+                                   CONFIG["vocabulary"])
         bigrams = generate_wordpairs(examples)
         if not bigrams:
             print(f'Skipping bad conversation: {conversation}')
