@@ -5,7 +5,7 @@ import numpy as np
 
 from data_util import (add_begin_end_tokens, calculate_windows_params,
                        convert_ms_to_fs, generate_wordpairs, remove_duplicates,
-                       return_conversations, return_examples,
+                       remove_oovs, return_conversations, return_examples,
                        test_for_bad_window)
 from electrode_utils import return_electrode_array
 
@@ -139,6 +139,7 @@ def build_design_matrices_seq2seq(set_str,
             print(f'Skipping bad conversation: {conversation}')
             continue
         bigrams = remove_duplicates(bigrams)
+        bigrams = remove_oovs(bigrams, vocab, data_tag=set_str)
 
         for bigram in bigrams:
             (seq_length, start_onset, end_onset,
