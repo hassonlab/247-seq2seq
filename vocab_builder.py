@@ -2,12 +2,82 @@ import glob
 import json
 import os
 import sys
-from collections import Counter
+from collections import Counter, OrderedDict
 
 import pandas as pd
 import sentencepiece as spm
 
 from data_util import return_conversations
+
+
+def get_std_vocab(CONFIG, classify=True):
+    # Build vocabulary by reading datums
+    min_freq = CONFIG["vocab_min_freq"]
+    exclude_words = set(CONFIG["exclude_words"])
+    word2freq = Counter()
+    conversations = CONFIG["TRAIN_CONV"]
+
+    convs = return_conversations(CONFIG, conversations)
+
+    tokens_to_add = [
+        CONFIG["begin_token"], CONFIG["end_token"], CONFIG["oov_token"],
+        CONFIG["pad_token"]
+    ]
+
+    start_index = 0 if classify else len(tokens_to_add)
+
+    conv_count = 0
+    for conversation, suffix, _ in convs:
+        datum_fn = glob.glob(conversation + suffix)[0]
+        if not datum_fn:
+            print('File DNE: ', conversation + suffix)
+            continue
+        conv_count += 1
+
+        with open(datum_fn, 'r') as fin:
+            lines = map(lambda x: x.split(), fin)
+            examples = map(
+                lambda x: (" ".join([
+                    z for y in x[0:-4] if (z:= y.lower().strip().replace(
+                        '"', '')) not in exclude_words
+                ])), lines)
+            examples = filter(lambda x: len(x) > 0, examples)
+            examples = list(map(lambda x: x.split(), examples))
+        word2freq.update(word for example in examples for word in example)
+
+    if min_freq > 1:
+        word2freq = dict(filter(lambda x: x[1] >= min_freq, word2freq.items()))
+
+    vocab = sorted(word2freq.keys())
+    w2i = {word: i for i, word in enumerate(vocab, start_index)}
+
+    if not classify:
+        w2f_tok, w2i_tok = {}, {}
+        for i, token in enumerate(tokens_to_add):
+            w2f_tok[token] = -1
+            w2i_tok[token] = i
+        word2freq.update(w2f_tok)
+        w2i.update(w2i_tok)
+        vocab.extend(tokens_to_add)
+        w2i = OrderedDict(sorted(w2i.items(), key=lambda kv: kv[1]))
+
+    n_classes = len(vocab)
+    i2w = {i: word for word, i in w2i.items()}
+
+    print("# Conversations:", conv_count)
+    print("Vocabulary size (min_freq=%d): %d" % (min_freq, len(word2freq)))
+
+    # Save word counter
+    print("Saving word counter")
+    with open("%sword2freq1.json" % CONFIG["SAVE_DIR"], "w") as fp:
+        json.dump(word2freq, fp, indent=4)
+    sys.stdout.flush()
+
+    # figure1(save_dir, word2freq)
+    # figure2(save_dir, word2freq)
+    # figure3(save_dir, word2freq)
+
+    return word2freq, vocab, n_classes, w2i, i2w
 
 
 # Build vocabulary by reading datums
@@ -18,7 +88,7 @@ def get_vocab(CONFIG):
     word2freq = Counter()
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
     conversations = CONFIG["TRAIN_CONV"]
-    
+
     convs = return_conversations(CONFIG, conversations)
 
     conv_count = 0
