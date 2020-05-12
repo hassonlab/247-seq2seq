@@ -29,7 +29,7 @@ def build_design_matrices_classification(set_str, CONFIG,
     aug_shift_fs = [int(s / 1000 * fs) for s in aug_shift_ms]
 
     signals, labels = [], []
-    for conversation, suffix, idx in convs[:15]:
+    for conversation, suffix, idx in convs:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]
@@ -117,7 +117,7 @@ def build_design_matrices_seq2seq(set_str,
     convs = return_conversations(CONFIG, set_str)
 
     signals, labels, seq_lengths = [], [], []
-    for conversation, suffix, idx in convs[:15]:
+    for conversation, suffix, idx in convs[:10]:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]
@@ -168,6 +168,6 @@ def build_design_matrices_seq2seq(set_str,
             # TODO: Data Augmentation
             signals.append(word_signal)
     print('final')
-    print(len(signals), len(labels))
+    print(len(labels), len(signals))
     assert len(labels) == len(signals), "Bad Shape for Lengths"
     return signals, labels

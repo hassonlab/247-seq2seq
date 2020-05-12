@@ -408,18 +408,42 @@ if not args.no_eval and not classify:
             all_preds.extend(y[idx].cpu().numpy())
             categorical.extend(cat.cpu().numpy())
             all_labs.extend(lab.cpu().numpy())
-            print("Output: ",
-                  vocab.DecodeIds(torch.argmax(y[0], dim=1).tolist()))
-            print("Output_sr: ",
-                  vocab.DecodeIds(torch.argmax(y_sr[0], dim=1).tolist()))
-            print("Target: ", vocab.DecodeIds(trg_y[0].tolist()))
-            print()
-            print("Output: ",
-                  vocab.DecodeIds(torch.argmax(y[-1], dim=1).tolist()))
-            print("Output_sr: ",
-                  vocab.DecodeIds(torch.argmax(y_sr[-1], dim=1).tolist()))
-            print("Target: ", vocab.DecodeIds(trg_y[-1].tolist()))
-            # print("BLEU: ", sentence_bleu([target_sent], predicted_sent))
+
+            if CONFIG["vocabulary"] == 'spm':
+                print("Output: ",
+                      vocab.DecodeIds(torch.argmax(y[0], dim=1).tolist()))
+                print("Output_sr: ",
+                      vocab.DecodeIds(torch.argmax(y_sr[0], dim=1).tolist()))
+                print("Target: ", vocab.DecodeIds(trg_y[0].tolist()))
+                print()
+                print("Output: ",
+                      vocab.DecodeIds(torch.argmax(y[-1], dim=1).tolist()))
+                print("Output_sr: ",
+                      vocab.DecodeIds(torch.argmax(y_sr[-1], dim=1).tolist()))
+                print("Target: ", vocab.DecodeIds(trg_y[-1].tolist()))
+                # print("BLEU: ", sentence_bleu([target_sent], predicted_sent))
+            elif CONFIG["vocabulary"] == 'std':
+                print(
+                    "Output: ", ' '.join(
+                        [i2w[i] for i in torch.argmax(y[0], dim=1).tolist()]))
+                print(
+                    "Output_sr: ", ' '.join([
+                        i2w[i] for i in torch.argmax(y_sr[0], dim=1).tolist()
+                    ]))
+                print("Target: ",
+                      ' '.join([i2w[i] for i in trg_y[0].tolist()]))
+                print()
+                print(
+                    "Output: ", ' '.join(
+                        [i2w[i] for i in torch.argmax(y[-1], dim=1).tolist()]))
+                print(
+                    "Output_sr: ", ' '.join([
+                        i2w[i] for i in torch.argmax(y_sr[-1], dim=1).tolist()
+                    ]))
+                print("Target: ",
+                      ' '.join([i2w[i] for i in trg_y[-1].tolist()]))
+            else:
+                print("bad Vocabulary")
 
     all_preds = np.array(all_preds)
     categorical = np.array(categorical)
@@ -427,7 +451,8 @@ if not args.no_eval and not classify:
     print("Calculated predictions")
 
     train_freq = train_ds.train_freq
-    i2w = {i: vocab.IdToPiece(i) for i in range(len(vocab))}
+    if CONFIG["vocabulary"] == 'spm':
+        i2w = {i: vocab.IdToPiece(i) for i in range(len(vocab))}
     markers = [
         CONFIG["begin_token"], CONFIG["end_token"], CONFIG["oov_token"],
         CONFIG["pad_token"]

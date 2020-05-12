@@ -41,7 +41,7 @@ CONFIG = {
     "valid_convs":
     '-valid-convs.txt',
     "vocabulary":
-    'spm'
+    'std'
 }
 
 
