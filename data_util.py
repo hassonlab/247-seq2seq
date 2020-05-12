@@ -11,16 +11,23 @@ def read_file(fn):
     return lines
 
 
-def return_conversations(CONFIG, conversations):
+def return_conversations(CONFIG, set_str):
     """Returns list of conversations
 
     Arguments:
         CONFIG {dict} -- Configuration information
-        conversations {list} -- conversation files
+        set_str {string} -- string indicating set type (train or valid)
 
     Returns:
         list -- List of tuples (directory, file, idx)
     """
+    if set_str == 'train':
+        conversations = CONFIG["TRAIN_CONV"]
+    elif set_str == 'valid':
+        conversations = CONFIG["VALID_CONV"]
+    else:
+        print('Invalid set string')
+
     convs = [
         (conv_dir + conv_name, '/misc/*datum_%s.txt' % ds, idx)
         for idx, (conv_dir, convs, ds) in enumerate(

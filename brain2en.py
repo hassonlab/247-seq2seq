@@ -71,31 +71,35 @@ if classify:
 
     print("Loading training data")
     x_train, y_train = build_design_matrices_classification(
-        CONFIG, w2i, TRAIN_CONV, delimiter=" ", aug_shift_ms=[-1000])
+        'train', CONFIG, w2i, delimiter=" ", aug_shift_ms=[-1000])
     sys.stdout.flush()
     print("Loading validation data")
-    x_valid, y_valid = build_design_matrices_classification(CONFIG,
+    x_valid, y_valid = build_design_matrices_classification('valid',
+                                                            CONFIG,
                                                             w2i,
-                                                            VALID_CONV,
                                                             delimiter=" ",
                                                             aug_shift_ms=[])
     sys.stdout.flush()
     if args.model == "ConvNet10":
         x_train = x_train[:, np.newaxis, ...]
         x_valid = x_valid[:, np.newaxis, ...]
+
     # Shuffle labels if required
     if args.shuffle:
         print("Shuffling labels")
         np.random.shuffle(y_train)
         np.random.shuffle(y_valid)
+
     x_train = torch.from_numpy(x_train).float()
     print("Shape of training signals: ", x_train.size())
     y_train = torch.from_numpy(y_train)
     train_ds = data.TensorDataset(x_train, y_train)
+
     x_valid = torch.from_numpy(x_valid).float()
     print("Shape of validation signals: ", x_valid.size())
     y_valid = torch.from_numpy(y_valid)
     valid_ds = data.TensorDataset(x_valid, y_valid)
+
     # Create dataset and data generators
     print("Creating dataset and generators")
     sys.stdout.flush()
@@ -111,19 +115,20 @@ else:
     if CONFIG["vocabulary"] == 'spm':
         vocab = get_sp_vocab(CONFIG, algo='unigram', vocab_size=500)
     elif CONFIG["vocabulary"] == 'std':
-        word2freq, word_list, n_classes, vocab, i2w = get_std_vocab(CONFIG, classify)
+        word2freq, word_list, n_classes, vocab, i2w = get_std_vocab(
+            CONFIG, classify)
     else:
         print("Such vocabulary doesn't exist")
     # print([(i, vocab.IdToPiece(i)) for i in range(len(vocab))])
 
     print("Loading training data")
     x_train, y_train = build_design_matrices_seq2seq(
-        CONFIG, vocab, TRAIN_CONV, delimiter=" ", aug_shift_ms=[-1000, -500])
-    sys.stdout.flush()
+        'train', CONFIG, vocab, delimiter=" ", aug_shift_ms=[-1000, -500])
+
     print("Loading validation data")
-    x_valid, y_valid = build_design_matrices_seq2seq(CONFIG,
+    x_valid, y_valid = build_design_matrices_seq2seq('valid',
+                                                     CONFIG,
                                                      vocab,
-                                                     VALID_CONV,
                                                      delimiter=" ",
                                                      aug_shift_ms=[])
     sys.stdout.flush()

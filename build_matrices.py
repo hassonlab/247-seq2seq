@@ -12,9 +12,8 @@ from electrode_utils import return_electrode_array
 
 # Build design matrices from conversation directories,
 # and process for word classification
-def build_design_matrices_classification(CONFIG,
+def build_design_matrices_classification(set_str, CONFIG,
                                          vocab,
-                                         conversations,
                                          fs=512,
                                          delimiter=',',
                                          aug_shift_ms=[-500, -250, 250]):
@@ -26,7 +25,7 @@ def build_design_matrices_classification(CONFIG,
     half_window = signal_param_dict["half_window"]
     n_bins = len(range(-half_window, half_window, signal_param_dict["bin_fs"]))
 
-    convs = return_conversations(CONFIG, conversations)
+    convs = return_conversations(CONFIG, set_str)
     aug_shift_fs = [int(s / 1000 * fs) for s in aug_shift_ms]
 
     signals, labels = [], []
@@ -100,9 +99,9 @@ def build_design_matrices_classification(CONFIG,
     return np.array(signals), np.array(labels)
 
 
-def build_design_matrices_seq2seq(CONFIG,
+def build_design_matrices_seq2seq(set_str,
+                                  CONFIG,
                                   vocab,
-                                  conversations,
                                   fs=512,
                                   delimiter=',',
                                   aug_shift_ms=[-500, -250, 250]):
@@ -115,10 +114,10 @@ def build_design_matrices_seq2seq(CONFIG,
     subjects = CONFIG["subjects"]
     signal_param_dict = convert_ms_to_fs(CONFIG)
 
-    convs = return_conversations(CONFIG, conversations)
+    convs = return_conversations(CONFIG, set_str)
 
     signals, labels, seq_lengths = [], [], []
-    for conversation, suffix, idx in convs:
+    for conversation, suffix, idx in convs[:15]:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]
@@ -144,7 +143,7 @@ def build_design_matrices_seq2seq(CONFIG,
         for bigram in bigrams:
             (seq_length, start_onset, end_onset,
              n_bins) = (calculate_windows_params(bigram, signal_param_dict))
-            
+
             if seq_length <= 0:
                 print("bad bi-gram")
                 continue

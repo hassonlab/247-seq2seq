@@ -15,9 +15,8 @@ def get_std_vocab(CONFIG, classify=True):
     min_freq = CONFIG["vocab_min_freq"]
     exclude_words = set(CONFIG["exclude_words"])
     word2freq = Counter()
-    conversations = CONFIG["TRAIN_CONV"]
 
-    convs = return_conversations(CONFIG, conversations)
+    convs = return_conversations(CONFIG, 'train')
 
     tokens_to_add = [
         CONFIG["begin_token"], CONFIG["end_token"], CONFIG["oov_token"],
@@ -87,9 +86,8 @@ def get_vocab(CONFIG):
     exclude_words = set(CONFIG["exclude_words_class"])
     word2freq = Counter()
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
-    conversations = CONFIG["TRAIN_CONV"]
 
-    convs = return_conversations(CONFIG, conversations)
+    convs = return_conversations(CONFIG, 'train')
 
     conv_count = 0
     for conversation, suffix, _ in convs:
@@ -131,11 +129,10 @@ def get_vocab(CONFIG):
 def get_sp_vocab(CONFIG, algo='unigram', vocab_size=1000):
     exclude_words = set(CONFIG["exclude_words"])
     columns = ["word", "onset", "offset", "accuracy", "speaker"]
-    conversations = CONFIG["TRAIN_CONV"]
     oov_tok = CONFIG["oov_token"]
 
-    convs = return_conversations(CONFIG, conversations)
-    
+    convs = return_conversations(CONFIG, 'train')
+
     words, conv_count = [], 0
     for conversation, suffix, idx in convs:
 
