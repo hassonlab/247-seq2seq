@@ -135,9 +135,9 @@ def get_sp_vocab(CONFIG, algo='unigram', vocab_size=1000):
     oov_tok = CONFIG["oov_token"]
 
     convs = return_conversations(CONFIG, conversations)
-
+    
     words, conv_count = [], 0
-    for conversation, suffix, idx in convs[0:10]:
+    for conversation, suffix, idx in convs:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]

@@ -118,7 +118,7 @@ def build_design_matrices_seq2seq(CONFIG,
     convs = return_conversations(CONFIG, conversations)
 
     signals, labels, seq_lengths = [], [], []
-    for conversation, suffix, idx in convs[0:15]:
+    for conversation, suffix, idx in convs:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]
@@ -135,6 +135,7 @@ def build_design_matrices_seq2seq(CONFIG,
         examples = return_examples(datum_fn, delimiter, vocab, exclude_words,
                                    CONFIG["vocabulary"])
         bigrams = generate_wordpairs(examples)
+
         if not bigrams:
             print(f'Skipping bad conversation: {conversation}')
             continue
@@ -143,13 +144,14 @@ def build_design_matrices_seq2seq(CONFIG,
         for bigram in bigrams:
             (seq_length, start_onset, end_onset,
              n_bins) = (calculate_windows_params(bigram, signal_param_dict))
+            
             if seq_length <= 0:
                 print("bad bi-gram")
                 continue
             seq_lengths.append(seq_length)
 
             if test_for_bad_window(start_onset, end_onset, ecogs.shape,
-                                   CONFIG["window_size"]):
+                                   signal_param_dict['window_fs']):
                 continue
 
             labels.append(
@@ -166,5 +168,6 @@ def build_design_matrices_seq2seq(CONFIG,
             # TODO: Data Augmentation
             signals.append(word_signal)
     print('final')
+    print(len(signals), len(labels))
     assert len(labels) == len(signals), "Bad Shape for Lengths"
     return signals, labels
