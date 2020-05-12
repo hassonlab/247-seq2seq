@@ -13,6 +13,7 @@ import torch
 def read_file(fn):
     with open(fn, 'r') as f:
         lines = [line.rstrip() for line in f]
+    print(f'Number of Conversations is: {len(lines)}')
     return lines
 
 
