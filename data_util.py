@@ -52,6 +52,8 @@ def return_examples(file, delim, vocabulary, ex_words, vocab_str='std'):
                     if x in vocabulary.keys() else vocabulary['<unk>']
                     for x in x[0].split()
                 ], x[1], int(float(x[2])), int(float(x[3]))), examples)
+        else:
+            print("Bad vocabulary string")
         return list(examples)
 
 
