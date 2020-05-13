@@ -135,3 +135,4 @@ Results-*
 *.vocab
 Results
 *.ipynb
+slurm_logs
