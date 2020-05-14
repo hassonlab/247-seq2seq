@@ -16,7 +16,7 @@ def arg_parser():
     init-model (string):
 '''
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default='ConvNet10')
+    parser.add_argument('--model', type=str, default='MeNTAL')
     parser.add_argument('--subjects', nargs='*', default=['625', '676'])
     parser.add_argument('--shift', type=int, default=0)
     parser.add_argument('--lr', type=float, default=1e-4)
@@ -39,6 +39,6 @@ def arg_parser():
     parser.add_argument('--tf-nlayer', type=int, default=12)
     parser.add_argument('--tf-dropout', type=float, default=0.05)
     parser.add_argument('--weight-decay', type=float, default=0.35)
-    args = parser.parse_args([])
+    args = parser.parse_args()
 
     return args

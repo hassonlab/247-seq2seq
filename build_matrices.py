@@ -117,7 +117,7 @@ def build_design_matrices_seq2seq(set_str,
     convs = return_conversations(CONFIG, set_str)
 
     signals, labels, seq_lengths = [], [], []
-    for conversation, suffix, idx in convs[:10]:
+    for conversation, suffix, idx in convs:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]
@@ -130,6 +130,7 @@ def build_design_matrices_seq2seq(set_str,
         if not ecogs.size:
             print(f'Skipping bad conversation: {conversation}')
             continue
+        raise Exception(ecogs.shape)
 
         examples = return_examples(datum_fn, delimiter, vocab, exclude_words,
                                    CONFIG["vocabulary"])

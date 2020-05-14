@@ -58,6 +58,8 @@ def build_config(args, results_str):
     if not os.path.isdir(SAVE_DIR):
         os.makedirs(SAVE_DIR)
 
+    # sys.stdout = open(LOG_FILE, 'a+')
+
     # Conversation splits
     TRAIN_CONV, VALID_CONV = [], []
     for meta, subject in zip(META_DIRS, args.subjects):

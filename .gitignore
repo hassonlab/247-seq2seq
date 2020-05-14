@@ -136,3 +136,4 @@ Results-*
 Results
 *.ipynb
 slurm_logs
+*.svg

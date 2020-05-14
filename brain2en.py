@@ -35,6 +35,8 @@ results_str = now.strftime("%Y-%m-%d-%H:%M")
 args = arg_parser()
 CONFIG = build_config(args, results_str)
 
+# sys.stdout = open(CONFIG["LOG_FILE"], 'w')
+
 # Model objectives
 MODEL_OBJ = {
     "ConvNet10": "classifier",
@@ -284,6 +286,16 @@ if __name__ == "__main__":
                     if hasattr(best_model, 'module') else best_model
                 torch.save(model_to_save, model_name)
             sys.stdout.flush()
+
+        # Additional Info when using cuda
+        if DEVICE.type == 'cuda':
+            print('Memory Usage:')
+            for i in range(args.gpus):
+                print('Allocated:',
+                      round(torch.cuda.max_memory_allocated(i) / 1024**3, 1),
+                      'GB')
+                print('Cached:   ',
+                      round(torch.cuda.memory_cached(i) / 1024**3, 1), 'GB')
 
         # if epoch > 10 and valid_loss > max(history['valid_loss'][-3:]):
         #     lr /= 2.
