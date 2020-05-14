@@ -21,7 +21,7 @@ def arg_parser():
     parser.add_argument('--shift', type=int, default=0)
     parser.add_argument('--lr', type=float, default=1e-4)
     parser.add_argument('--gpus', type=int, default=16)
-    parser.add_argument('--epochs', type=int, default=5)
+    parser.add_argument('--epochs', type=int, default=75)
     parser.add_argument('--batch-size', type=int, default=48)
     parser.add_argument('--window-size', type=int, default=2000)
     parser.add_argument('--bin-size', type=int, default=50)

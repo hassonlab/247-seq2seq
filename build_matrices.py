@@ -130,7 +130,6 @@ def build_design_matrices_seq2seq(set_str,
         if not ecogs.size:
             print(f'Skipping bad conversation: {conversation}')
             continue
-        raise Exception(ecogs.shape)
 
         examples = return_examples(datum_fn, delimiter, vocab, exclude_words,
                                    CONFIG["vocabulary"])
@@ -168,7 +167,12 @@ def build_design_matrices_seq2seq(set_str,
 
             # TODO: Data Augmentation
             signals.append(word_signal)
-    print('final')
-    print(len(labels), len(signals))
+
+    print(f'Number of {set_str} samples is: {len(signals)}')
+    print(f'Number of {set_str} samples is: {len(labels)}')
+
+    print(f'Maximum Sequence Length is: {max([len(i) for i in signals])}')
+
     assert len(labels) == len(signals), "Bad Shape for Lengths"
+
     return signals, labels
