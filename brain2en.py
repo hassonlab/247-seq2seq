@@ -291,11 +291,10 @@ if __name__ == "__main__":
         if DEVICE.type == 'cuda':
             print('Memory Usage:')
             for i in range(args.gpus):
-                print('Allocated:',
-                      round(torch.cuda.max_memory_allocated(i) / 1024**3, 1),
-                      'GB')
-                print('Cached:   ',
-                      round(torch.cuda.memory_cached(i) / 1024**3, 1), 'GB')
+                max_alloc = round(
+                    torch.cuda.max_memory_allocated(i) / 1024**3, 1)
+                cached = round(torch.cuda.memory_cached(i) / 1024**3, 1)
+                print(f'GPU: {i} Allocated: {max_alloc}G Cached: {cached}G')
 
         # if epoch > 10 and valid_loss > max(history['valid_loss'][-3:]):
         #     lr /= 2.
