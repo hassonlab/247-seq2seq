@@ -1,4 +1,5 @@
 import glob
+import os
 from multiprocessing import Pool
 
 import numpy as np
@@ -26,11 +27,9 @@ def get_electrode(elec_id):
 
 def return_electrode_array(conv, elect):
     """Return neural data from all electrodes as a numpy object
-
     Arguments:
         conv {list} -- List of all conversations to be processed
         elect {list: int} -- List of electrode IDs to be processed
-
     Returns:
         Array -- Numpy object with neural data
     """
@@ -40,6 +39,28 @@ def return_electrode_array(conv, elect):
             filter(lambda x: x is not None, pool.map(get_electrode, elec_ids)))
 
     ecogs = np.asarray(ecogs)
+    ecogs = (ecogs - ecogs.mean(axis=1).reshape(
+        ecogs.shape[0], 1)) / ecogs.std(axis=1).reshape(ecogs.shape[0], 1)
+    ecogs = ecogs.T
+    assert (ecogs.ndim == 2 and ecogs.shape[1] == len(elect))
+    return ecogs
+
+
+def return_electrode_array1(CONFIG, conv, elect):
+    """Return neural data from all electrodes as a numpy object
+
+    Arguments:
+        conv {list} -- List of all conversations to be processed
+        elect {list: int} -- List of electrode IDs to be processed
+
+    Returns:
+        Array -- Numpy object with neural data
+    """
+    conv_id = conv.split('/')[-2:]
+    print(conv_id[-1])
+    new_conv = os.path.join(CONFIG["npy_dir"], conv_id[0], conv_id[1] + '.npy')
+    ecogs = np.load(new_conv)[:, elect].T
+
     ecogs = (ecogs - ecogs.mean(axis=1).reshape(
         ecogs.shape[0], 1)) / ecogs.std(axis=1).reshape(ecogs.shape[0], 1)
     ecogs = ecogs.T

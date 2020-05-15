@@ -28,6 +28,8 @@ CONFIG = {
     "/scratch/gpfs/hgazula/brain2en",
     "data_dir":
     "/scratch/gpfs/hgazula",
+    "npy_dir":
+    "/scratch/gpfs/hgazula/npy_data",
     "num_cpus":
     8,
     "oov_token":
