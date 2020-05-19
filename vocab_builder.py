@@ -10,7 +10,7 @@ import sentencepiece as spm
 from data_util import return_conversations
 
 
-def get_std_vocab(CONFIG, classify=True):
+def get_std_vocab(CONFIG, comprehension=True, classify=True):
     # Build vocabulary by reading datums
     min_freq = CONFIG["vocab_min_freq"]
     exclude_words = set(CONFIG["exclude_words"])
@@ -35,11 +35,15 @@ def get_std_vocab(CONFIG, classify=True):
 
         with open(datum_fn, 'r') as fin:
             lines = map(lambda x: x.split(), fin)
-            examples = map(
+            examples = list(map(
                 lambda x: (" ".join([
                     z for y in x[0:-4] if (z:= y.lower().strip().replace(
                         '"', '')) not in exclude_words
-                ])), lines)
+                ]), x[-1]), lines))
+            if not comprehension:
+                examples = [x[0] for x in examples if x[1] == 'Speaker1']
+            else:
+                examples = [x[0] for x in examples]
             examples = filter(lambda x: len(x) > 0, examples)
             examples = list(map(lambda x: x.split(), examples))
         word2freq.update(word for example in examples for word in example)
