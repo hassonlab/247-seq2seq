@@ -1,7 +1,7 @@
 import argparse
 
 
-def arg_parser():
+def arg_parser(default_args=None):
     ''' Explanation of the Arguments:
     model (string): Type of model to run from among
                     (PITOM, ConvNet, MeNTALmini, MeNTAL)
@@ -27,7 +27,7 @@ def arg_parser():
     parser.add_argument('--bin-size', type=int, default=50)
     parser.add_argument('--init-model', type=str, default=None)
     parser.add_argument('--no-plot', action='store_false', default=False)
-    parser.add_argument('--electrodes', nargs='*', default=list(range(1, 65)))
+    parser.add_argument('--electrodes', nargs='*', default=list(range(1, 56)))
     parser.add_argument('--vocab-min-freq', type=int, default=10)
     parser.add_argument('--seed', type=int, default=1234)
     parser.add_argument('--shuffle', action="store_true", default=False)
@@ -39,6 +39,10 @@ def arg_parser():
     parser.add_argument('--tf-nlayer', type=int, default=12)
     parser.add_argument('--tf-dropout', type=float, default=0.05)
     parser.add_argument('--weight-decay', type=float, default=0.35)
-    args = parser.parse_args()
+
+    if not default_args:
+        args = parser.parse_args()
+    else:
+        args = parser.parse_args(default_args)
 
     return args

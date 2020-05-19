@@ -68,7 +68,7 @@ def get_std_vocab(CONFIG, classify=True):
 
     # Save word counter
     print("Saving word counter")
-    with open("%sword2freq1.json" % CONFIG["SAVE_DIR"], "w") as fp:
+    with open("%sword2freq.json" % CONFIG["SAVE_DIR"], "w") as fp:
         json.dump(word2freq, fp, indent=4)
     sys.stdout.flush()
 
