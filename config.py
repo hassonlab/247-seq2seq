@@ -11,8 +11,6 @@ CONFIG = {
     "begin_token":
     "<s>",
     "datum_suffix": ("conversation_trimmed", "trimmed"),
-    "electrodes":
-    64,
     "end_token":
     "</s>",
     "exclude_words_class": [
