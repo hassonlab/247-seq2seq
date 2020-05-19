@@ -118,7 +118,7 @@ else:
         vocab = get_sp_vocab(CONFIG, algo='unigram', vocab_size=500)
     elif CONFIG["vocabulary"] == 'std':
         word2freq, word_list, n_classes, vocab, i2w = get_std_vocab(
-            CONFIG, classify)
+            CONFIG, comprehension=False, classify=classify)
     else:
         print("Such vocabulary doesn't exist")
     # print([(i, vocab.IdToPiece(i)) for i in range(len(vocab))])
