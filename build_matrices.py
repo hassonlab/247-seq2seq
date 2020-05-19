@@ -29,7 +29,7 @@ def build_design_matrices_classification(set_str, CONFIG,
     aug_shift_fs = [int(s / 1000 * fs) for s in aug_shift_ms]
 
     signals, labels = [], []
-    for conversation, suffix, idx in convs:
+    for conversation, suffix, idx, electrodes in convs:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]

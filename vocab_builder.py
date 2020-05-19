@@ -95,7 +95,7 @@ def get_vocab(CONFIG):
     convs = return_conversations(CONFIG, 'train')
 
     conv_count = 0
-    for conversation, suffix, _ in convs:
+    for conversation, suffix, _, _ in convs:
         datum_fn = glob.glob(conversation + suffix)[0]
         if not datum_fn:
             print('File DNE: ', conversation + suffix)
@@ -140,7 +140,7 @@ def get_sp_vocab(CONFIG, algo='unigram', vocab_size=1000):
     convs = return_conversations(CONFIG, 'train')
 
     words, conv_count = [], 0
-    for conversation, suffix, idx in convs:
+    for conversation, suffix, idx, _ in convs:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]
