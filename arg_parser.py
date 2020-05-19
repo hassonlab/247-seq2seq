@@ -20,14 +20,17 @@ def arg_parser(default_args=None):
     parser.add_argument('--subjects', nargs='*', default=['625', '676'])
     parser.add_argument('--shift', type=int, default=0)
     parser.add_argument('--lr', type=float, default=1e-4)
-    parser.add_argument('--gpus', type=int, default=16)
+    parser.add_argument('--gpus', type=int, default=4)
     parser.add_argument('--epochs', type=int, default=75)
     parser.add_argument('--batch-size', type=int, default=48)
     parser.add_argument('--window-size', type=int, default=2000)
     parser.add_argument('--bin-size', type=int, default=50)
     parser.add_argument('--init-model', type=str, default=None)
     parser.add_argument('--no-plot', action='store_false', default=False)
-    parser.add_argument('--max-electrodes', nargs='*', type=int, default=[55, 64])
+    parser.add_argument('--max-electrodes',
+                        nargs='*',
+                        type=int,
+                        default=[64, 64])
     parser.add_argument('--vocab-min-freq', type=int, default=10)
     parser.add_argument('--seed', type=int, default=1234)
     parser.add_argument('--shuffle', action="store_true", default=False)

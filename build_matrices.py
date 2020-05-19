@@ -12,13 +12,13 @@ from electrode_utils import return_electrode_array
 
 # Build design matrices from conversation directories,
 # and process for word classification
-def build_design_matrices_classification(set_str, CONFIG,
+def build_design_matrices_classification(set_str,
+                                         CONFIG,
                                          vocab,
                                          fs=512,
                                          delimiter=',',
                                          aug_shift_ms=[-500, -250, 250]):
 
-    electrodes = CONFIG["electrodes"]
     subjects = CONFIG["subjects"]
     signal_param_dict = convert_ms_to_fs(CONFIG)
 

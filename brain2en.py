@@ -157,13 +157,12 @@ else:
 # Default models and parameters
 DEFAULT_MODELS = {
     "ConvNet10": (len(vocab), ),
-    "PITOM": (len(vocab), len(args.electrodes) * len(args.subjects)),
+    "PITOM": (len(vocab), sum(args.max_electrodes)),
     "MeNTALmini":
-    (len(args.electrodes) * len(args.subjects), len(vocab), args.tf_dmodel,
-     args.tf_nhead, args.tf_nlayer, args.tf_dff, args.tf_dropout),
-    "MeNTAL":
-    (len(args.electrodes) * len(args.subjects), len(vocab), args.tf_dmodel,
-     args.tf_nhead, args.tf_nlayer, args.tf_dff, args.tf_dropout)
+    (sum(args.max_electrodes), len(vocab), args.tf_dmodel, args.tf_nhead,
+     args.tf_nlayer, args.tf_dff, args.tf_dropout),
+    "MeNTAL": (sum(args.max_electrodes), len(vocab), args.tf_dmodel,
+               args.tf_nhead, args.tf_nlayer, args.tf_dff, args.tf_dropout)
 }
 
 # Create model
