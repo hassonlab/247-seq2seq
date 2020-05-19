@@ -86,4 +86,8 @@ def build_config(args, results_str):
 
     CONFIG.update(vars(args))
 
+    CONFIG["electrode_list"] = [
+        range(1, k + 1) for k in CONFIG["max_electrodes"]
+    ]
+
     return CONFIG

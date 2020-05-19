@@ -27,7 +27,7 @@ def arg_parser(default_args=None):
     parser.add_argument('--bin-size', type=int, default=50)
     parser.add_argument('--init-model', type=str, default=None)
     parser.add_argument('--no-plot', action='store_false', default=False)
-    parser.add_argument('--electrodes', nargs='*', default=list(range(1, 56)))
+    parser.add_argument('--max-electrodes', nargs='*', type=int, default=[55, 64])
     parser.add_argument('--vocab-min-freq', type=int, default=10)
     parser.add_argument('--seed', type=int, default=1234)
     parser.add_argument('--shuffle', action="store_true", default=False)

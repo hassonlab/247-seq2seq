@@ -29,10 +29,10 @@ def return_conversations(CONFIG, set_str):
         print('Invalid set string')
 
     convs = [
-        (conv_dir + conv_name, '/misc/*datum_%s.txt' % ds, idx)
-        for idx, (conv_dir, convs, ds) in enumerate(
-            zip(CONFIG["CONV_DIRS"], conversations, CONFIG["datum_suffix"]))
-        for conv_name in convs
+        (conv_dir + conv_name, '/misc/*datum_%s.txt' % ds, idx, electrode_list)
+        for idx, (conv_dir, convs, ds, electrode_list) in enumerate(
+            zip(CONFIG["CONV_DIRS"], conversations, CONFIG["datum_suffix"],
+                CONFIG["electrode_list"])) for conv_name in convs
     ]
 
     return convs

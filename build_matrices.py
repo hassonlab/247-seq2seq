@@ -110,14 +110,13 @@ def build_design_matrices_seq2seq(set_str,
     begin_token = CONFIG["begin_token"]
     end_token = CONFIG["end_token"]
     exclude_words = CONFIG["exclude_words"]
-    electrodes = CONFIG["electrodes"]
     subjects = CONFIG["subjects"]
     signal_param_dict = convert_ms_to_fs(CONFIG)
 
     convs = return_conversations(CONFIG, set_str)
 
     signals, labels, seq_lengths = [], [], []
-    for conversation, suffix, idx in convs:
+    for conversation, suffix, idx, electrodes in convs:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]

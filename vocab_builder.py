@@ -26,7 +26,7 @@ def get_std_vocab(CONFIG, comprehension=True, classify=True):
     start_index = 0 if classify else len(tokens_to_add)
 
     conv_count = 0
-    for conversation, suffix, _ in convs:
+    for conversation, suffix, _, _ in convs:
         datum_fn = glob.glob(conversation + suffix)[0]
         if not datum_fn:
             print('File DNE: ', conversation + suffix)
