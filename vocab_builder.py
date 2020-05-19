@@ -68,9 +68,10 @@ def get_std_vocab(CONFIG, classify=True):
 
     # Save word counter
     print("Saving word counter")
-    with open("%sword2freq.json" % CONFIG["SAVE_DIR"], "w") as fp:
-        json.dump(word2freq, fp, indent=4)
-    sys.stdout.flush()
+    write_df = pd.DataFrame.from_dict(word2freq, orient='index', columns=['Frequency'])
+    write_df['Word'] = write_df.index
+    write_df = write_df[['Word', 'Frequency']]
+    write_df.to_excel(os.path.join(CONFIG["SAVE_DIR"], "word2freq.xlsx"), index=False)
 
     # figure1(save_dir, word2freq)
     # figure2(save_dir, word2freq)
@@ -118,10 +119,11 @@ def get_vocab(CONFIG):
 
     # Save word counter
     print("Saving word counter")
-    with open("%sword2freq.json" % CONFIG["SAVE_DIR"], "w") as fp:
-        json.dump(word2freq, fp, indent=4)
-    sys.stdout.flush()
-
+    write_df = pd.DataFrame.from_dict(word2freq, orient='index', columns=['Frequency'])
+    write_df['Word'] = write_df.index
+    write_df = write_df[['Word', 'Frequency']]
+    write_df.to_excel(os.path.join(CONFIG["SAVE_DIR"], "word2freq.xlsx"), index=False)
+    
     return word2freq, vocab, n_classes, w2i, i2w
 
 

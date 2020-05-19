@@ -169,7 +169,7 @@ def build_design_matrices_seq2seq(set_str,
             signals.append(word_signal)
 
     print(f'Number of {set_str} samples is: {len(signals)}')
-    print(f'Number of {set_str} samples is: {len(labels)}')
+    print(f'Number of {set_str} labels is: {len(labels)}')
 
     print(f'Maximum Sequence Length is: {max([len(i) for i in signals])}')
 
