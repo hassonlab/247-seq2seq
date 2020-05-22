@@ -20,8 +20,9 @@ from build_matrices import (build_design_matrices_classification,
                             build_design_matrices_seq2seq)
 from config import build_config
 from dl_utils import Brain2enDataset, MyCollator
+from eval_utils import evaluate_roc, evaluate_topk
 from models import PITOM, ConvNet10, MeNTAL, MeNTALmini
-from train_eval import evaluate_roc, evaluate_topk, plot_training, train, valid
+from train_eval import plot_training, train, valid
 from vocab_builder import get_sp_vocab, get_std_vocab, get_vocab
 
 # from train_eval import *
@@ -227,9 +228,8 @@ model.to(DEVICE)
 # Training and evaluation script
 if __name__ == "__main__":
 
-    print("Training on %d GPU(s) with batch_size %d for %d epochs" %
+    print("\nTraining on %d GPU(s) with batch_size %d for %d epochs" %
           (args.gpus, args.batch_size, args.epochs))
-    print("=" * CONFIG["print_pad"])
     sys.stdout.flush()
 
     best_val_loss = float("inf")
@@ -257,7 +257,8 @@ if __name__ == "__main__":
     lr = args.lr
     for epoch in range(1, args.epochs + 1):
         epoch_start_time = time.time()
-        print('| train | epoch %d | ' % epoch, end='')
+        print(f'Epoch: {epoch:02}')
+        print('\tTrain: ', end='')
         train_loss, train_acc = train(
             train_dl,
             model,
@@ -274,7 +275,7 @@ if __name__ == "__main__":
                 break
         history['train_loss'].append(train_loss)
         history['train_acc'].append(train_acc)
-        print('| valid | epoch %d | ' % epoch, end='')
+        print('\tValid: ', end='')
         with torch.no_grad():
             valid_loss, valid_acc = valid(
                 valid_dl,
@@ -286,7 +287,7 @@ if __name__ == "__main__":
                 pad_idx=vocab[CONFIG["pad_token"]] if not classify else -1)
         history['valid_loss'].append(valid_loss)
         history['valid_acc'].append(valid_acc)
-        print('|' + '-' * (CONFIG["print_pad"] - 2) + '|')
+
         # Store best model so far
         if valid_loss < best_val_loss:
             best_model, best_val_loss = model, valid_loss
@@ -320,7 +321,7 @@ if __name__ == "__main__":
 
     if not args.no_eval and classify:
 
-        print("Evaluating predictions on test set")
+        print("\nEvaluating predictions on test set")
         # Load best model
         model = torch.load(model_name)
         if args.gpus:

@@ -1,6 +1,8 @@
 import os
 
 from data_util import read_file
+
+
 '''
 exclude_words_class: words to be excluded from the classifier vocabulary
 exclude_words: words to be excluded from the tranformer vocabulary
