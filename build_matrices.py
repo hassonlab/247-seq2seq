@@ -104,7 +104,8 @@ def build_design_matrices_seq2seq(set_str,
                                   vocab,
                                   fs=512,
                                   delimiter=',',
-                                  aug_shift_ms=[-500, -250, 250]):
+                                  aug_shift_ms=[-500, -250, 250],
+                                  max_num_bins=None):
 
     # extra stuff that happens inside
     begin_token = CONFIG["begin_token"]
@@ -144,9 +145,9 @@ def build_design_matrices_seq2seq(set_str,
             (seq_length, start_onset, end_onset,
              n_bins) = (calculate_windows_params(bigram, signal_param_dict))
 
-            if seq_length <= 0:
-                print("bad bi-gram")
+            if (seq_length <= 0) or (max_num_bins and n_bins > max_num_bins):
                 continue
+
             seq_lengths.append(seq_length)
 
             if test_for_bad_window(start_onset, end_onset, ecogs.shape,
@@ -167,10 +168,12 @@ def build_design_matrices_seq2seq(set_str,
             # TODO: Data Augmentation
             signals.append(word_signal)
 
+    print(f'Maximum Sequence Length (Preset): {max_num_bins}')
+
     print(f'Number of {set_str} samples is: {len(signals)}')
     print(f'Number of {set_str} labels is: {len(labels)}')
 
-    print(f'Maximum Sequence Length is: {max([len(i) for i in signals])}')
+    print(f'Maximum Sequence Length: {max([len(i) for i in signals])}')
 
     assert len(labels) == len(signals), "Bad Shape for Lengths"
 

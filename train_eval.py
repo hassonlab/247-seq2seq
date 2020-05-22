@@ -169,7 +169,7 @@ class MultiGPULossCompute:
 
 
 ### Training loop
-def train(data_iter, model, criterion, devices, opt,
+def train(data_iter, model, criterion, devices, device, opt,
           scheduler=None, seq2seq=False, pad_idx=-1):
     model.train()
     start_time = time.time()
@@ -179,8 +179,8 @@ def train(data_iter, model, criterion, devices, opt,
     for i, batch in enumerate(data_iter):
         # Prevent gradient accumulation
         model.zero_grad()
-        src = batch[0].cuda()
-        trg = batch[1].long().to(src.device)
+        src = batch[0].to(device)
+        trg = batch[1].long().to(device)
         if seq2seq:
             # trg_y = batch[2].long().to(src.device)
             # trg_pos_mask, trg_pad_mask = batch[3].to(src.device), batch[4].to(src.device)
@@ -227,8 +227,8 @@ def train(data_iter, model, criterion, devices, opt,
             # print("brah")
             # loss = criterion(out.view(-1, out.size(-1)), trg_y.view(-1))
             # loss.backward()
-            trg_y = batch[2].long().to(src.device)
-            trg_pos_mask, trg_pad_mask = batch[3].to(src.device), batch[4].to(src.device)
+            trg_y = batch[2].long().to(device)
+            trg_pos_mask, trg_pad_mask = batch[3].to(device), batch[4].to(device)
             # Perform loss computation during forward pass for parallelism
             out, trg_y, loss = model.forward(src, trg, trg_pos_mask, trg_pad_mask, trg_y, criterion)
             idx = (trg_y != pad_idx).nonzero(as_tuple=True)
@@ -274,7 +274,7 @@ def train(data_iter, model, criterion, devices, opt,
     return total_loss, total_acc
 
 ### Validation loop
-def valid(data_iter, model, criterion,
+def valid(data_iter, model, criterion, device,
           temperature=1.0, n_samples=10, seq2seq=False, pad_idx=-1):
     model.eval()
     total_loss = 0.
@@ -282,11 +282,11 @@ def valid(data_iter, model, criterion,
     total_sample_rank_acc = 0.
     batch_count, count = 0, 0
     for i, batch in enumerate(data_iter):
-        src = batch[0].cuda()
-        trg = batch[1].long().to(src.device)
+        src = batch[0].to(device)
+        trg = batch[1].long().to(device)
         if seq2seq:
-            trg_y = batch[2].long().to(src.device)
-            trg_pos_mask, trg_pad_mask = batch[3].to(src.device), batch[4].to(src.device)
+            trg_y = batch[2].long().to(device)
+            trg_pos_mask, trg_pad_mask = batch[3].to(device), batch[4].to(device)
             out, trg_y, loss = model.forward(src, trg, trg_pos_mask, trg_pad_mask, trg_y, criterion)
             idx = (trg_y != pad_idx).nonzero(as_tuple=True)
             total_loss += loss.data.item()
@@ -296,7 +296,7 @@ def valid(data_iter, model, criterion,
             total_acc += float((out_top1 == trg_y).sum())
             out = F.softmax(out/temperature, dim=1)
             samples = torch.multinomial(out, n_samples)
-            pred = torch.zeros(samples.size(0)).cuda()
+            pred = torch.zeros(samples.size(0)).to(device)
             for j in range(len(pred)):
                 pred[j] = samples[j,torch.argmax(out[j,samples[j]])]
             total_sample_rank_acc += float((pred == trg_y).sum())

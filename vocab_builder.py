@@ -13,6 +13,7 @@ from data_util import return_conversations
 def get_std_vocab(CONFIG, comprehension=True, classify=True):
     # Build vocabulary by reading datums
     min_freq = CONFIG["vocab_min_freq"]
+    max_freq = CONFIG["vocab_max_freq"]
     exclude_words = set(CONFIG["exclude_words"])
     word2freq = Counter()
 
@@ -49,7 +50,7 @@ def get_std_vocab(CONFIG, comprehension=True, classify=True):
         word2freq.update(word for example in examples for word in example)
 
     if min_freq > 1:
-        word2freq = dict(filter(lambda x: x[1] >= min_freq, word2freq.items()))
+        word2freq = dict(filter(lambda x: x[1] >= min_freq and x[1] <= max_freq, word2freq.items()))
 
     vocab = sorted(word2freq.keys())
     w2i = {word: i for i, word in enumerate(vocab, start_index)}

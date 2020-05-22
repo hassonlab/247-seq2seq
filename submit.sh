@@ -6,8 +6,8 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G
-#SBATCH --time=0-00:59:00
-#SBATCH --gres=gpu:4
+#SBATCH --time=0-07:59:00
+#SBATCH --gres=gpu:1
 #SBATCH --mail-type=begin
 #SBATCH --mail-type=fail
 #SBATCH --mail-type=end
@@ -24,11 +24,22 @@ conda activate torch-env
 # --gres=gpu:8 -n 1 --exclusive
 # echo "Start time:" `date`
 for vocab_min_freq in 10; do
-  for lr in 0.0001; do
-    for weight_decay in 0.05; do
-      for dropout in 0.05; do
-        for model in "MeNTAL"; do
-          python brain2en.py --subjects 625 676 --model ${model} --lr ${lr} --tf-dropout ${dropout} --weight-decay ${weight_decay} --vocab-min-freq ${vocab_min_freq} &
+  for vocab_max_freq in 250; do
+    for max_num_bins in 60; do
+      for lr in 0.0001; do
+        for weight_decay in 0.05; do
+          for dropout in 0.05; do
+            for model in "MeNTAL"; do
+              python brain2en.py --subjects 625 \
+                                --max-electrodes 55 \
+                                --model ${model} \
+                                --lr ${lr} \
+                                --tf-dropout ${dropout} \
+                                --weight-decay ${weight_decay} \
+                                --vocab-min-freq ${vocab_min_freq} \
+                                --vocab-min-freq ${vocab_max_freq} &
+            done
+          done
         done;
       done;
     done;

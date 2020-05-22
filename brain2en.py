@@ -125,14 +125,21 @@ else:
 
     print("Loading training data")
     x_train, y_train = build_design_matrices_seq2seq(
-        'train', CONFIG, vocab, delimiter=" ", aug_shift_ms=[-1000, -500])
+        'train',
+        CONFIG,
+        vocab,
+        delimiter=" ",
+        aug_shift_ms=[-1000, -500],
+        max_num_bins=CONFIG["max_num_bins"])
 
     print("Loading validation data")
-    x_valid, y_valid = build_design_matrices_seq2seq('valid',
-                                                     CONFIG,
-                                                     vocab,
-                                                     delimiter=" ",
-                                                     aug_shift_ms=[])
+    x_valid, y_valid = build_design_matrices_seq2seq(
+        'valid',
+        CONFIG,
+        vocab,
+        delimiter=" ",
+        aug_shift_ms=[],
+        max_num_bins=CONFIG["max_num_bins"])
     sys.stdout.flush()
     # Shuffle labels if required
     if args.shuffle:
@@ -206,10 +213,12 @@ scheduler = None
 
 # Move model and loss to GPUs
 if args.gpus:
-    model.cuda()
-    criterion.cuda()
+    # model.cuda()
+    # criterion.cuda()
     if args.gpus > 1:
         model = nn.DataParallel(model)
+
+model.to(DEVICE)
 
 # Batch chunk size to send to single GPU
 # import math
@@ -254,6 +263,7 @@ if __name__ == "__main__":
             model,
             criterion,
             list(range(args.gpus)),
+            DEVICE,
             optimizer,
             scheduler=scheduler,
             seq2seq=not classify,
@@ -270,6 +280,7 @@ if __name__ == "__main__":
                 valid_dl,
                 model,
                 criterion,
+                DEVICE,
                 temperature=args.temp,
                 seq2seq=not classify,
                 pad_idx=vocab[CONFIG["pad_token"]] if not classify else -1)
