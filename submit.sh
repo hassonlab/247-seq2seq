@@ -38,9 +38,9 @@ for vocab_min_freq in 10; do
                                 --weight-decay ${weight_decay} \
                                 --vocab-min-freq ${vocab_min_freq} \
                                 --vocab-max-freq ${vocab_max_freq} \
-                                --max-num-bins ${max_num_bins} &&
-            done
-          done
+                                --max-num-bins ${max_num_bins} &
+            done;
+          done;
         done;
       done;
     done;
