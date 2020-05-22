@@ -25,19 +25,20 @@ conda activate torch-env
 # echo "Start time:" `date`
 for vocab_min_freq in 10; do
   for vocab_max_freq in 250; do
-    for max_num_bins in 60; do
+    for max_num_bins in 70; do
       for lr in 0.0001; do
         for weight_decay in 0.05; do
           for dropout in 0.05; do
             for model in "MeNTAL"; do
-              python brain2en.py --subjects 625 \
-                                --max-electrodes 55 \
+              python brain2en.py --subjects 676 \
+                                --max-electrodes 64 \
                                 --model ${model} \
                                 --lr ${lr} \
                                 --tf-dropout ${dropout} \
                                 --weight-decay ${weight_decay} \
                                 --vocab-min-freq ${vocab_min_freq} \
-                                --vocab-min-freq ${vocab_max_freq} &
+                                --vocab-max-freq ${vocab_max_freq} \
+                                --max-num-bins ${max_num_bins} &&
             done
           done
         done;
