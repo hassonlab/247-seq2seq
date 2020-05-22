@@ -1,5 +1,4 @@
 import glob
-import json
 import os
 import sys
 from collections import Counter, OrderedDict
@@ -8,6 +7,18 @@ import pandas as pd
 import sentencepiece as spm
 
 from data_util import return_conversations
+
+
+def save_word_counter(CONFIG, word2freq):
+    '''Save word counter'''
+    print("Saving word counter")
+    write_df = pd.DataFrame.from_dict(word2freq,
+                                      orient='index',
+                                      columns=['Frequency'])
+    write_df['Word'] = write_df.index
+    write_df = write_df[['Word', 'Frequency']]
+    write_df.to_excel(os.path.join(CONFIG["SAVE_DIR"], "word2freq.xlsx"),
+                      index=False)
 
 
 def get_std_vocab(CONFIG, comprehension=True, classify=True):
@@ -36,11 +47,12 @@ def get_std_vocab(CONFIG, comprehension=True, classify=True):
 
         with open(datum_fn, 'r') as fin:
             lines = map(lambda x: x.split(), fin)
-            examples = list(map(
-                lambda x: (" ".join([
-                    z for y in x[0:-4] if (z:= y.lower().strip().replace(
-                        '"', '')) not in exclude_words
-                ]), x[-1]), lines))
+            examples = list(
+                map(
+                    lambda x: (" ".join([
+                        z for y in x[0:-4] if (z:= y.lower().strip().replace(
+                            '"', '')) not in exclude_words
+                    ]), x[-1]), lines))
             if not comprehension:
                 examples = [x[0] for x in examples if x[1] == 'Speaker1']
             else:
@@ -50,7 +62,9 @@ def get_std_vocab(CONFIG, comprehension=True, classify=True):
         word2freq.update(word for example in examples for word in example)
 
     if min_freq > 1:
-        word2freq = dict(filter(lambda x: x[1] >= min_freq and x[1] <= max_freq, word2freq.items()))
+        word2freq = dict(
+            filter(lambda x: x[1] >= min_freq and x[1] <= max_freq,
+                   word2freq.items()))
 
     vocab = sorted(word2freq.keys())
     w2i = {word: i for i, word in enumerate(vocab, start_index)}
@@ -71,16 +85,7 @@ def get_std_vocab(CONFIG, comprehension=True, classify=True):
     print("# Conversations:", conv_count)
     print("Vocabulary size (min_freq=%d): %d" % (min_freq, len(word2freq)))
 
-    # Save word counter
-    print("Saving word counter")
-    write_df = pd.DataFrame.from_dict(word2freq, orient='index', columns=['Frequency'])
-    write_df['Word'] = write_df.index
-    write_df = write_df[['Word', 'Frequency']]
-    write_df.to_excel(os.path.join(CONFIG["SAVE_DIR"], "word2freq.xlsx"), index=False)
-
-    # figure1(save_dir, word2freq)
-    # figure2(save_dir, word2freq)
-    # figure3(save_dir, word2freq)
+    save_word_counter(CONFIG, word2freq)
 
     return word2freq, vocab, n_classes, w2i, i2w
 
@@ -122,13 +127,8 @@ def get_vocab(CONFIG):
     print("# Conversations:", conv_count)
     print("Vocabulary size (min_freq=%d): %d" % (min_freq, len(word2freq)))
 
-    # Save word counter
-    print("Saving word counter")
-    write_df = pd.DataFrame.from_dict(word2freq, orient='index', columns=['Frequency'])
-    write_df['Word'] = write_df.index
-    write_df = write_df[['Word', 'Frequency']]
-    write_df.to_excel(os.path.join(CONFIG["SAVE_DIR"], "word2freq.xlsx"), index=False)
-    
+    save_word_counter(CONFIG, word2freq)
+
     return word2freq, vocab, n_classes, w2i, i2w
 
 
