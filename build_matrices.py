@@ -105,7 +105,8 @@ def build_design_matrices_seq2seq(set_str,
                                   fs=512,
                                   delimiter=',',
                                   aug_shift_ms=[-500, -250, 250],
-                                  max_num_bins=None):
+                                  max_num_bins=None,
+                                  remove_unks=True):
 
     # extra stuff that happens inside
     begin_token = CONFIG["begin_token"]
@@ -139,7 +140,7 @@ def build_design_matrices_seq2seq(set_str,
             print(f'Skipping bad conversation: {conversation}')
             continue
         bigrams = remove_duplicates(bigrams)
-        bigrams = remove_oovs(bigrams, vocab, data_tag=set_str)
+        bigrams = remove_oovs(bigrams, vocab, data_tag=remove_unks)
 
         for bigram in bigrams:
             (seq_length, start_onset, end_onset,

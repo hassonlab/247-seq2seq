@@ -93,12 +93,11 @@ def remove_duplicates(grams):
     return list(df.to_records(index=False))
 
 
-def remove_oovs(grams, vocabulary, data_tag='train'):
-    if data_tag == 'train':
+def remove_oovs(grams, vocabulary, data_tag=True):
+    if data_tag:
         grams = filter(lambda x: vocabulary['<unk>'] not in x[0], grams)
     else:
-        # grams = filter(lambda x: x[0] != [vocabulary['<unk>']] * 2, grams)
-        grams = filter(lambda x: vocabulary['<unk>'] not in x[0], grams)
+        grams = filter(lambda x: x[0] != [vocabulary['<unk>']] * 2, grams)
     return list(grams)
 
 
