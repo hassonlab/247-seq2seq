@@ -1,8 +1,6 @@
 import os
 
 from data_util import read_file
-
-
 '''
 exclude_words_class: words to be excluded from the classifier vocabulary
 exclude_words: words to be excluded from the tranformer vocabulary
@@ -11,7 +9,7 @@ log_interval:
 
 
 def return_config_dict():
-    
+
     CONFIG = {
         "begin_token":
         "<s>",
@@ -19,18 +17,16 @@ def return_config_dict():
         "end_token":
         "</s>",
         "exclude_words_class": [
-            "sp", "{lg}", "{ns}", "it", "a", "an", "and", "are", "as", "at", "be",
-            "being", "by", "for", "from", "is", "of", "on", "that", "that's",
-            "the", "there", "there's", "this", "to", "their", "them", "these",
-            "he", "him", "his", "had", "have", "was", "were", "would"
+            "sp", "{lg}", "{ns}", "it", "a", "an", "and", "are", "as", "at",
+            "be", "being", "by", "for", "from", "is", "of", "on", "that",
+            "that's", "the", "there", "there's", "this", "to", "their", "them",
+            "these", "he", "him", "his", "had", "have", "was", "were", "would"
         ],
         "exclude_words": ["sp", "{lg}", "{ns}"],
         "log_interval":
         32,
-        "main_dir":
-        "/scratch/gpfs/hgazula/brain2en",
         "data_dir":
-        "/scratch/gpfs/hgazula",
+        "/scratch/gpfs/hgazula/brain2en-seq2seq-data",
         "num_cpus":
         8,
         "oov_token":
@@ -49,10 +45,11 @@ def return_config_dict():
 
     return CONFIG
 
+
 def build_config(args, results_str):
-    
+
     CONFIG = return_config_dict()
-    
+
     # Format directory logistics
     CONV_DIRS = [
         CONFIG["data_dir"] + '/%s-conversations/' % i for i in args.subjects
