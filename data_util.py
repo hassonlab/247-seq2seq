@@ -78,7 +78,7 @@ def generate_wordpairs(examples):
             my_grams.append(second)
         if ((first[1] and second[1]) and (len1 == 1 and len2 == 1)
                 and (first[2] < second[2])):
-            ak = (first[0] + second[0], True, first[2], second[3])
+            ak = (first[0] + second[0], True, first[2], second[2])
             my_grams.append(ak)
     return my_grams
 
