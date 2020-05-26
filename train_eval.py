@@ -111,8 +111,8 @@ def train(data_iter,
             # Perform loss computation during forward pass for parallelism
             out, trg_y, loss = model.forward(src, trg, trg_pos_mask,
                                              trg_pad_mask, trg_y, criterion)
-            idx = (trg_y != pad_idx).nonzero(as_tuple=True)
             total_loss += loss.data.item()
+            idx = (trg_y != pad_idx).nonzero(as_tuple=True)
             out = out[idx]
             trg_y = trg_y[idx]
             out = torch.argmax(out, dim=1)
