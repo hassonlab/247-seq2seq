@@ -112,11 +112,11 @@ def train(data_iter,
             out, trg_y, loss = model.forward(src, trg, trg_pos_mask,
                                              trg_pad_mask, trg_y, criterion)
             total_loss += loss.data.item()
-            idx = (trg_y != pad_idx).nonzero(as_tuple=True)
+            """ idx = (trg_y != pad_idx).nonzero(as_tuple=True)
             out = out[idx]
             trg_y = trg_y[idx]
             out = torch.argmax(out, dim=1)
-            total_acc += float((out == trg_y).sum())
+            total_acc += float((out == trg_y).sum()) """
             opt.step()
             if scheduler is not None:
                 scheduler.step()
@@ -143,13 +143,13 @@ def train(data_iter,
         count += int(out.size(0))
         batch_count += 1
     total_loss /= batch_count
-    total_acc /= count
+    # total_acc /= count
     elapsed = (time.time() - start_time) * 1000. / batch_count
     perplexity = float('inf')
     perplexity = math.exp(total_loss)
     print(
-        'loss {:5.3f} | accuracy {:5.3f} | perplexity {:3.2f} | ms/batch {:5.2f}'
-        .format(total_loss, total_acc, perplexity, elapsed),
+        'loss {:5.3f} | perplexity {:3.2f} | ms/batch {:5.2f}'
+        .format(total_loss, perplexity, elapsed),
         end='')
     return total_loss, total_acc
 
@@ -176,8 +176,8 @@ def valid(data_iter,
                 device)
             out, trg_y, loss = model.forward(src, trg, trg_pos_mask,
                                              trg_pad_mask, trg_y, criterion)
-            idx = (trg_y != pad_idx).nonzero(as_tuple=True)
             total_loss += loss.data.item()
+            """ idx = (trg_y != pad_idx).nonzero(as_tuple=True)
             out = out[idx]
             trg_y = trg_y[idx]
             out_top1 = torch.argmax(out, dim=1)
@@ -187,7 +187,7 @@ def valid(data_iter,
             pred = torch.zeros(samples.size(0)).to(device)
             for j in range(len(pred)):
                 pred[j] = samples[j, torch.argmax(out[j, samples[j]])]
-            total_sample_rank_acc += float((pred == trg_y).sum())
+            total_sample_rank_acc += float((pred == trg_y).sum()) """
         else:
             out = model.forward(src)
             loss = criterion(out.view(-1, out.size(-1)), trg.view(-1))
@@ -202,13 +202,13 @@ def valid(data_iter,
         count += int(out.size(0))
         batch_count += 1
     total_loss /= batch_count
-    total_acc /= count
-    total_sample_rank_acc /= count
+    # total_acc /= count
+    # total_sample_rank_acc /= count
     perplexity = float('inf')
     perplexity = math.exp(total_loss)
     print(
-        'loss {:5.3f} | accuracy {:5.3f} | sample-rank acc {:5.3f} | perplexity {:3.2f}'
-        .format(total_loss, total_acc, total_sample_rank_acc, perplexity))
+        'loss {:5.3f} | perplexity {:3.2f}'
+        .format(total_loss, perplexity))
     return total_loss, total_acc
 
 

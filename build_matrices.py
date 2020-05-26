@@ -118,7 +118,7 @@ def build_design_matrices_seq2seq(set_str,
     convs = return_conversations(CONFIG, set_str)
 
     signals, labels, seq_lengths = [], [], []
-    for conversation, suffix, idx, electrodes in convs:
+    for conversation, suffix, idx, electrodes in convs[:5]:
 
         # Check if files exists, if it doesn't go to next
         datum_fn = glob.glob(conversation + suffix)[0]
