@@ -401,7 +401,7 @@ if not args.no_eval and not classify:
             memory = model.encode(src)
             y = torch.zeros(src.size(0), 1, len(vocab)).long().cuda()
             y_sr = torch.zeros(src.size(0), 1, len(vocab)).long().cuda()
-            probs = torch.zeros(src.size(0), 1, len(vocab)).long().cuda()
+            # probs = torch.zeros(src.size(0), 1, len(vocab)).long().cuda()
             y[:, :, vocab[CONFIG["begin_token"]]] = 1
             y_sr[:, :, vocab[CONFIG["begin_token"]]] = 1
             for i in range(trg_y.size(1)):
