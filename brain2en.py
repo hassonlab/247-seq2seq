@@ -395,13 +395,13 @@ if not args.no_eval and not classify:
     with torch.no_grad():
         model.eval()
         for batch in valid_dl:
-            src, trg_y = batch[0].cuda(), batch[2].long().cuda()
-            trg_pos_mask, trg_pad_mask = batch[3].cuda().squeeze(
-            ), batch[4].cuda()
+            src, trg_y = batch[0].to(DEVICE), batch[2].long().to(DEVICE)
+            trg_pos_mask, trg_pad_mask = batch[3].to(DEVICE).squeeze(
+            ), batch[4].to(DEVICE)
             memory = model.encode(src)
-            y = torch.zeros(src.size(0), 1, len(vocab)).long().cuda()
-            y_sr = torch.zeros(src.size(0), 1, len(vocab)).long().cuda()
-            probs = torch.zeros(src.size(0), 1, len(vocab)).long().cuda()
+            y = torch.zeros(src.size(0), 1, len(vocab)).long().to(DEVICE)
+            y_sr = torch.zeros(src.size(0), 1, len(vocab)).long().to(DEVICE)
+            probs = torch.zeros(src.size(0), 1, len(vocab)).long().to(DEVICE)
             y[:, :, vocab[CONFIG["begin_token"]]] = 1
             y_sr[:, :, vocab[CONFIG["begin_token"]]] = 1
             for i in range(trg_y.size(1)):
@@ -409,16 +409,16 @@ if not args.no_eval and not classify:
                                    trg_pos_mask[:y.size(1), :y.size(1)],
                                    trg_pad_mask[:, :y.size(1)])[:, -1, :]
                 out = softmax(out / args.temp)
-                temp = torch.zeros(src.size(0), len(vocab)).long().cuda()
+                temp = torch.zeros(src.size(0), len(vocab)).long().to(DEVICE)
                 temp = temp.scatter_(1,
                                      torch.argmax(out, dim=1).unsqueeze(-1), 1)
                 y = torch.cat([y, temp.unsqueeze(1)], dim=1)
                 # probs = torch.cat([probs, out.unsqueeze(1)], dim=1)
                 samples = torch.multinomial(out, 20)
-                pred = torch.zeros(out.size(0)).long().cuda()
+                pred = torch.zeros(out.size(0)).long().to(DEVICE)
                 for j in range(len(samples)):
                     pred[j] = samples[j, torch.argmax(out[j, samples[j]])]
-                temp = torch.zeros(pred.size(0), len(vocab)).long().cuda()
+                temp = torch.zeros(pred.size(0), len(vocab)).long().to(DEVICE)
                 pred = temp.scatter_(1, pred.unsqueeze(-1), 1).unsqueeze(1)
                 y_sr = torch.cat([y_sr, pred], dim=1)
             y, y_sr = y[:, 1:, :], y_sr[:, 1:, :]
@@ -483,6 +483,8 @@ if not args.no_eval and not classify:
     # Evaluate top-k
     print("Evaluating top-k")
     sys.stdout.flush()
+    raise Exception(all_preds.shape, all_preds[1], all_labs.shape, all_labs[1],
+i2w, train_freq, type(train_freq))
     res = evaluate_topk(all_preds,
                         all_labs,
                         i2w,
